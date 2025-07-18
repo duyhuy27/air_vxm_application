@@ -4,8 +4,10 @@ let aqiData = [];
 let markerLayers = [];
 let sidebarOpen = false;
 
-// API Configuration
-const API_BASE = 'http://localhost:8000/api/v1';
+// API Configuration - Auto detect environment
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:8000/api/v1'  // Local development
+    : `${window.location.protocol}//${window.location.host}/api/v1`;  // Production (Railway)
 
 // Hanoi Districts Mapping (Lat/Lng to District Names)
 const hanoiDistricts = {
