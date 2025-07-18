@@ -16,7 +16,11 @@ class Settings(BaseSettings):
         "http://localhost:3000",  # React default
         "http://localhost:8080",  # Vue default
         "http://localhost:5173",  # Vite default
-        "http://127.0.0.1:8000"   # FastAPI default
+        "http://127.0.0.1:8000",  # FastAPI default
+        "http://localhost",       # Localhost any port
+        "http://127.0.0.1",      # 127.0.0.1 any port
+        "file://",               # File protocol
+        "*"                      # Allow all origins for development
     ]
     
     # BigQuery configuration

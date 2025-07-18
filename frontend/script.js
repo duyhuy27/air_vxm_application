@@ -4,10 +4,12 @@ let aqiData = [];
 let markerLayers = [];
 let sidebarOpen = false;
 
-// API Configuration - Auto detect environment
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:8000/api/v1'  // Local development
-    : `${window.location.protocol}//${window.location.host}/api/v1`;  // Production (Railway)
+// API Configuration - Point to Railway backend
+const API_BASE = 'https://fastapi-bigquery-app-production.up.railway.app/api/v1';
+
+// Debug info
+console.log('🌐 API_BASE:', API_BASE);
+console.log('🌍 Current hostname:', window.location.hostname);
 
 // Hanoi Districts Mapping (Lat/Lng to District Names)
 const hanoiDistricts = {
@@ -153,6 +155,11 @@ function getDistrictName(lat, lng) {
 
 // Map Initialization
 function initMap() {
+    // Check if map is already initialized
+    if (map) {
+        map.remove(); // Remove existing map instance
+    }
+
     map = L.map('map').setView([21.0285, 105.8542], 10);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -577,24 +584,3 @@ function animateRankingItems() {
     });
 }
 
-// Initialize app when page loads
-document.addEventListener('DOMContentLoaded', function () {
-    // Hide loading overlay on page load
-    showLoading(false);
-
-    // Backup: Force hide loading after 10 seconds if still showing
-    setTimeout(() => {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        if (loadingOverlay && loadingOverlay.style.display !== 'none') {
-            console.warn('Force hiding loading overlay after timeout');
-            showLoading(false);
-        }
-    }, 10000);
-
-    // Initialize map and load data
-    initMap();
-    loadAQIData();
-
-    // Auto refresh every 5 minutes
-    setInterval(loadAQIData, 5 * 60 * 1000);
-}); 
