@@ -13,25 +13,42 @@ fi
 echo "🔐 Đăng nhập Railway..."
 railway login
 
-# 3. Khởi tạo project (chỉ lần đầu)
-echo "📦 Khởi tạo Railway project..."
-railway init
+# 3. Kiểm tra nếu đã có project
+if [ ! -f ".railway/config.json" ]; then
+    echo "📦 Khởi tạo Railway project..."
+    railway init
+fi
 
-# 4. Set environment variables
-echo "⚙️  Setting environment variables..."
-railway variables set ENVIRONMENT=production
-railway variables set DEBUG=false
-railway variables set GOOGLE_CLOUD_PROJECT=invertible-now-462103-m3
-railway variables set BIGQUERY_DATASET=weather_and_air_dataset
+echo ""
+echo "⚙️  Environment Variables Setup"
+echo "================================"
+echo "Bạn cần set environment variables thủ công qua Railway dashboard:"
+echo "1. Mở Railway dashboard: https://railway.com"
+echo "2. Chọn project vừa tạo"
+echo "3. Vào Settings > Variables"
+echo "4. Thêm các variables sau:"
+echo ""
+echo "   ENVIRONMENT = production"
+echo "   DEBUG = false"
+echo "   GOOGLE_CLOUD_PROJECT = invertible-now-462103-m3"
+echo "   BIGQUERY_DATASET = weather_and_air_dataset"
+echo ""
+echo "5. Upload BigQuery credentials:"
+echo "   - Vào Files tab"
+echo "   - Upload file credentials/bigquery-key.json"
+echo "   - Thêm variable: GOOGLE_APPLICATION_CREDENTIALS = /app/credentials/bigquery-key.json"
+echo ""
 
-# 5. Upload credentials file
-echo "🔑 Upload BigQuery credentials..."
-echo "Hãy upload file credentials/bigquery-key.json qua Railway dashboard"
-echo "Sau đó set: GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/bigquery-key.json"
+read -p "Đã setup variables xong? (y/n): " setup_done
 
-# 6. Deploy
+if [[ $setup_done != "y" ]]; then
+    echo "❌ Hãy setup variables trước khi deploy"
+    exit 1
+fi
+
+# 4. Deploy
 echo "🚀 Deploying..."
-railway deploy
+railway up
 
 echo "✅ Backend deployment hoàn tất!"
 echo "🌐 URL sẽ hiển thị trong Railway dashboard" 
