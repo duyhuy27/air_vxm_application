@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: fastapi-bigquery-app
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: GOOGLE_CLOUD_PROJECT
+        sync: false  # Set này qua Render dashboard
+      - key: BIGQUERY_DATASET
+        sync: false  # Set này qua Render dashboard
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        sync: false  # Set path tới file credentials 

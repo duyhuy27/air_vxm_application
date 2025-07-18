@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # FastAPI application
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - BIGQUERY_DATASET=${BIGQUERY_DATASET}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/service-account.json
+    volumes:
+      # Mount credentials file (bạn sẽ đặt file JSON vào thư mục này)
+      - ./credentials:/app/credentials:ro
+      # Mount source code for development (optional)
+      - .:/app:ro
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Volumes for persistent data
+volumes:
+  credentials: 
