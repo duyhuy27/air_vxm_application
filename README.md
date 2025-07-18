@@ -1,277 +1,277 @@
-# AQI Hanoi Visualization Platform
+# 🌍 AirVXM Platform
 
-Nền tảng trực quan hóa chỉ số chất lượng không khí (AQI) tại Hà Nội với dữ liệu thời gian thực từ BigQuery.
+**Hệ thống giám sát chất lượng không khí Hà Nội theo thời gian thực**
 
-## 🌟 Tech Stack & Features
+Nền tảng web hiện đại hiển thị dữ liệu AQI (Air Quality Index) từ 30 trạm quan trắc môi trường tại Hà Nội, tích hợp BigQuery để xử lý dữ liệu real-time.
 
-**Backend**: FastAPI + BigQuery + Pandas (US EPA AQI calculation, null-safe processing)  
-**Frontend**: Vanilla JS + Leaflet + CSS3 (AQI flags, detail modals, responsive)  
-**Data**: 30 Hanoi monitoring stations with fallback weather values  
-**Deploy**: Docker ready + Railway/Render/GCR options
+## ✨ Tính năng chính
 
-## 📋 API Endpoints
+- 📍 **Bản đồ tương tác**: Hiển thị 30 trạm quan trắc với marker animation
+- 📊 **AQI Dashboard**: Xếp hạng các quận theo chất lượng không khí
+- 🔄 **Real-time Data**: Cập nhật dữ liệu từ BigQuery theo thời gian thực  
+- 📱 **Responsive UI**: Giao diện hiện đại, hoạt động trên mọi thiết bị
+- ⚡ **High Performance**: FastAPI backend với Leaflet frontend
 
-### Core Endpoints
-- `GET /` - Root health check
-- `GET /docs` - Interactive API documentation (Swagger)
-- `GET /api/v1/health` - Detailed health check
-- `GET /api/v1/ready` - Readiness probe
+## 🏗️ Kiến trúc hệ thống
 
-### AQI (Air Quality) APIs **[MAIN FEATURE]**
-- `GET /api/v1/aqi/latest` - Latest data từ tất cả điểm monitoring (cho bản đồ) 🌤️
-- `GET /api/v1/aqi/detail?lat={lat}&lng={lng}` - Chi tiết đầy đủ của một điểm cụ thể 📍
-- `GET /api/v1/aqi/date-range` - Dữ liệu theo khoảng thời gian
-- `GET /api/v1/aqi/locations` - Danh sách locations có dữ liệu
+```
+Frontend (Vercel) ←→ Backend API (Railway) ←→ BigQuery Database
+     ↓                      ↓                        ↓
+- Leaflet Maps        - FastAPI              - Real-time data
+- Vanilla JS          - US EPA AQI           - 30 monitoring stations
+- CSS3 Animation      - CORS enabled         - Historical data
+```
 
-### Users APIs (Demo)
-- `GET /api/v1/users` - Lấy danh sách users
-- `POST /api/v1/users` - Tạo user mới
-- `GET /api/v1/users/{user_id}` - Lấy user theo ID
+## 🚀 Quick Start - Development
 
-### Items APIs (Demo) 
-- `GET /api/v1/items` - Lấy danh sách items (có filter theo category)
-- `POST /api/v1/items` - Tạo item mới
-- `GET /api/v1/items/categories` - Lấy danh sách categories
-
-### Analytics APIs (Demo)
-- `GET /api/v1/analytics/dashboard` - Dashboard stats tổng quan
-- `GET /api/v1/analytics/items-by-category` - Phân tích theo category
-- `GET /api/v1/analytics/trends` - Xu hướng theo thời gian
-
-## 🚀 Cài đặt và Chạy
-
-### 1. Requirements
-
-- Python 3.11+
-- Google Cloud Project với BigQuery enabled
-- Service Account JSON file
-
-### 2. Setup Local Development
+### 1. Setup Backend
 
 ```bash
-# Clone project
+# Clone repository
 git clone <repository-url>
 cd air_vxm_application
 
 # Tạo virtual environment
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# hoặc venv\Scripts\activate  # Windows
+source venv/bin/activate  # macOS/Linux
+# hoặc: venv\Scripts\activate  # Windows
 
-# Install dependencies
+# Cài đặt dependencies
 pip install -r requirements.txt
 
-# Copy và cấu hình environment
+# Cấu hình environment variables
 cp env.example .env
-# Điền thông tin vào file .env
+# Chỉnh sửa .env với thông tin BigQuery credentials
 
-# Đặt service account JSON file vào thư mục credentials/
-mkdir credentials
-# Copy file service-account.json vào credentials/
-
-# Chạy application
-python main.py
-# hoặc
+# Chạy backend
 uvicorn main:app --reload
 ```
 
-### 3. Setup với Docker
+Backend sẽ chạy tại: http://localhost:8000
+
+### 2. Setup Frontend
 
 ```bash
-# Build và run với docker-compose
-docker-compose up --build
+# Mở terminal mới
+cd frontend
 
-# Hoặc build và run manual
-docker build -t fastapi-bigquery-app .
-docker run -p 8000:8000 --env-file .env fastapi-bigquery-app
+# Chạy simple HTTP server
+python -m http.server 3000
 ```
 
-## 🗄️ BigQuery Setup
+Frontend sẽ chạy tại: http://localhost:3000
 
-### 1. Tạo Dataset và Tables
+## 🌐 Production Deployment
 
-```python
-# Chạy script setup (chỉ cần 1 lần)
-python -c "
-from app.db.bigquery import create_sample_tables, insert_sample_data
-create_sample_tables()
-insert_sample_data()
-"
-```
-
-### 2. Sample Schema
-
-**Users Table:**
-```sql
-CREATE TABLE `project.dataset.users` (
-    id INTEGER NOT NULL,
-    name STRING NOT NULL,
-    email STRING NOT NULL, 
-    age INTEGER,
-    created_at TIMESTAMP NOT NULL
-);
-```
-
-**Items Table:**
-```sql
-CREATE TABLE `project.dataset.items` (
-    id INTEGER NOT NULL,
-    name STRING NOT NULL,
-    description STRING,
-    price FLOAT NOT NULL,
-    category STRING NOT NULL,
-    created_at TIMESTAMP NOT NULL
-);
-```
-
-## 🌐 Deployment Options
-
-### Option 1: Railway (Khuyến nghị - Dễ nhất)
-
-1. Connect GitHub repo tới Railway
-2. Set environment variables:
-   ```
-   GOOGLE_CLOUD_PROJECT=your-project-id
-   BIGQUERY_DATASET=your-dataset  
-   GOOGLE_APPLICATION_CREDENTIALS=base64-encoded-json
-   ```
-3. Deploy tự động qua Git push
-
-### Option 2: Render
-
-1. Connect GitHub repo tới Render
-2. Sử dụng `render.yaml` configuration
-3. Set environment variables qua dashboard
-4. Deploy tự động
-
-### Option 3: Google Cloud Run
+### Yêu cầu trước khi deploy:
 
 ```bash
-# Setup gcloud CLI và login
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-
-# Enable APIs
-gcloud services enable cloudbuild.googleapis.com
-gcloud services enable run.googleapis.com
-
-# Deploy với Cloud Build
-gcloud builds submit --config cloudbuild.yaml
-
-# Hoặc deploy trực tiếp
-gcloud run deploy fastapi-bigquery-app \
-  --source . \
-  --region us-central1 \
-  --allow-unauthenticated
+# Cài đặt CLI tools
+npm install -g @railway/cli
+npm install -g vercel
 ```
 
-## 📁 Project Structure
+### Deployment tự động (Khuyến nghị):
+
+```bash
+# Deploy cả backend + frontend
+./scripts/deploy-all.sh
+```
+
+### Deployment từng bước:
+
+#### 1. Deploy Backend lên Railway
+
+```bash
+# Chạy script deployment
+./scripts/deploy-railway.sh
+```
+
+**Các bước trong script:**
+1. Login Railway CLI
+2. Khởi tạo project Railway  
+3. Set environment variables
+4. Upload BigQuery credentials
+5. Deploy backend
+
+**Environment Variables cần set:**
+- `ENVIRONMENT=production`
+- `DEBUG=false`
+- `GOOGLE_CLOUD_PROJECT=invertible-now-462103-m3`
+- `BIGQUERY_DATASET=weather_and_air_dataset`
+- `GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/bigquery-key.json`
+
+#### 2. Deploy Frontend lên Vercel
+
+```bash
+# Chạy script deployment
+./scripts/deploy-vercel.sh
+```
+
+**Script sẽ tự động:**
+1. Backup script.js gốc
+2. Thay thế API URL từ localhost sang Railway URL
+3. Deploy lên Vercel
+4. Restore lại config localhost cho development
+
+## 📁 Cấu trúc Project
 
 ```
 air_vxm_application/
-├── app/
-│   ├── __init__.py
-│   ├── api/                    # API layer
-│   │   ├── __init__.py
-│   │   ├── router.py          # Main router
-│   │   └── endpoints/         # API endpoints
-│   │       ├── users.py       # Users CRUD
-│   │       ├── items.py       # Items CRUD  
-│   │       ├── analytics.py   # Analytics APIs
-│   │       └── health.py      # Health checks
-│   ├── core/                  # Core configuration
-│   │   ├── __init__.py
-│   │   └── config.py          # Settings & config
-│   └── db/                    # Database layer
-│       ├── __init__.py
-│       └── bigquery.py        # BigQuery integration
-├── credentials/               # Service account files
-├── main.py                   # Application entry point
-├── requirements.txt          # Python dependencies
-├── Dockerfile               # Docker configuration
-├── docker-compose.yml       # Local development
-├── railway.toml            # Railway deployment
-├── render.yaml             # Render deployment
-├── cloudbuild.yaml         # Google Cloud Build
-└── README.md               # This file
+├── 📂 app/                     # Backend FastAPI
+│   ├── 📂 api/
+│   │   ├── 📂 endpoints/
+│   │   │   ├── aqi.py         # AQI endpoints
+│   │   │   └── health.py      # Health check
+│   │   └── router.py          # Main router
+│   ├── 📂 core/               # Core configurations
+│   └── 📂 db/                 # Database connections
+├── 📂 frontend/               # Frontend Vanilla JS
+│   ├── index.html             # Main page
+│   ├── style.css              # CSS + Animations
+│   ├── script.js              # JavaScript logic
+│   └── vercel.json            # Vercel config
+├── 📂 scripts/                # Deployment scripts
+│   ├── deploy-all.sh          # Deploy cả 2
+│   ├── deploy-railway.sh      # Deploy backend  
+│   └── deploy-vercel.sh       # Deploy frontend
+├── 📂 credentials/            # BigQuery credentials
+├── main.py                    # FastAPI entry point
+├── requirements.txt           # Python dependencies
+└── README.md                  # Documentation
 ```
 
-## 🔧 Configuration
+## 🔧 API Endpoints
 
-### Environment Variables
+### Health Check
+- `GET /` - Root health check
+- `GET /api/v1/health` - Detailed health check
 
-| Variable | Description | Required | Default Value |
-|----------|-------------|----------|---------------|
-| `GOOGLE_CLOUD_PROJECT` | GCP Project ID | ✅ | `invertible-now-462103-m3` |
-| `BIGQUERY_DATASET` | BigQuery Dataset name | ✅ | `weather_and_air_dataset` |
-| `GOOGLE_APPLICATION_CREDENTIALS` | Path to service account JSON | ✅ | `credentials/invertible-now-462103-m3-23f2fe58ae65.json` |
-| `ENVIRONMENT` | deployment environment | ❌ | `development` |
-| `DEBUG` | Enable debug mode | ❌ | `true` |
+### Air Quality Data
+- `GET /api/v1/aqi/latest` - Latest AQI data từ 30 trạm
+- `GET /api/v1/aqi/detail?lat={lat}&lng={lng}` - Chi tiết theo tọa độ
 
-### Credentials Setup
+### Example Response:
+```json
+{
+  "location_name": "Hang Dau",
+  "coordinates": {"lat": 21.0285, "lng": 105.8542},
+  "aqi": 181,
+  "pm25": 113.2,
+  "temperature": 28.5,
+  "humidity": 65.0,
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
 
-1. Tạo Service Account trong GCP Console cho project `invertible-now-462103-m3`
-2. Gán quyền BigQuery Data Viewer và BigQuery Job User
-3. Download JSON key file 
-4. Đặt file vào `credentials/invertible-now-462103-m3-23f2fe58ae65.json`
+## 🎨 UI Features
 
-**Hoặc copy từ project cũ:**
+- **🎯 Interactive Map**: Leaflet với custom markers
+- **📊 Live Rankings**: Top 10 quận theo AQI
+- **💫 Animations**: Logo pulse, marker hover, loading states
+- **📱 Responsive**: Mobile-first design
+- **🎨 Modern UI**: Gradient backgrounds, glassmorphism effects
+
+## 🔄 Update Process - Quy trình cập nhật
+
+### Khi có thay đổi code:
+
 ```bash
-cp /path/to/your/service-account.json credentials/invertible-now-462103-m3-23f2fe58ae65.json
+# 1. Commit changes
+git add .
+git commit -m "Your update message"
+git push
+
+# 2. Deploy lại
+./scripts/deploy-all.sh
 ```
 
-## 🧪 Testing
-
+### Chỉ update backend:
 ```bash
-# Chạy tests
-pytest
-
-# Test health check
-curl http://localhost:8000/api/v1/health
-
-# Test AQI endpoints (MAIN FEATURE)
-curl http://localhost:8000/api/v1/aqi/latest        # Latest AQI data
-curl http://localhost:8000/api/v1/aqi/locations     # Available locations  
-curl http://localhost:8000/api/v1/aqi/stats         # AQI statistics
-
-# Test demo APIs
-curl -X POST "http://localhost:8000/api/v1/users" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Test User", "email": "test@example.com", "age": 25}'
+./scripts/deploy-railway.sh
 ```
 
-## 📚 Development Notes
+### Chỉ update frontend:
+```bash
+./scripts/deploy-vercel.sh
+```
 
-### Thêm API mới:
-1. Tạo file trong `app/api/endpoints/`
-2. Define router và endpoints
-3. Include router trong `app/api/router.py`
+## 🔐 Environment Variables
 
-### BigQuery Operations:
-- Sử dụng `get_bigquery_client()` cho mọi operations
-- SQL injection protection: validate inputs
-- Sử dụng parameterized queries cho production
+### Development (.env):
+```env
+ENVIRONMENT=development
+DEBUG=true
+GOOGLE_CLOUD_PROJECT=invertible-now-462103-m3
+BIGQUERY_DATASET=weather_and_air_dataset
+GOOGLE_APPLICATION_CREDENTIALS=credentials/bigquery-key.json
+```
 
-### Error Handling:
-- Tất cả endpoints có try-catch với HTTPException
-- Log errors để debugging
-- Return meaningful error messages
+### Production (Railway):
+Được set tự động qua script `deploy-railway.sh`
 
-## 🤝 Contributing
+## 📊 Data Source
 
-1. Fork project
-2. Create feature branch
-3. Commit changes  
-4. Push và create Pull Request
+- **Database**: Google BigQuery
+- **Dataset**: `invertible-now-462103-m3.weather_and_air_dataset.Staging_RawData`
+- **Coverage**: 30 monitoring stations in Hanoi
+- **Update Frequency**: Real-time
+- **AQI Calculation**: US EPA standard
+
+## 🛠️ Tech Stack
+
+**Backend:**
+- FastAPI (Python web framework)
+- Google BigQuery (Data warehouse)
+- Pandas (Data processing)  
+- US EPA AQI calculation algorithm
+
+**Frontend:**
+- Vanilla JavaScript (No frameworks)
+- Leaflet.js (Interactive maps)
+- CSS3 (Animations & responsive design)
+
+**Deployment:**
+- Railway (Backend hosting)
+- Vercel (Frontend hosting)
+- GitHub (Source control)
+
+## 🚨 Troubleshooting
+
+### Backend Issues:
+```bash
+# Kiểm tra logs
+railway logs
+
+# Restart service
+railway redeploy
+```
+
+### Frontend Issues:
+```bash
+# Kiểm tra deployment
+vercel logs
+
+# Redeploy
+vercel --prod
+```
+
+### Local Development:
+```bash
+# Reset API URL in frontend
+cd frontend
+git checkout script.js
+
+# Restart backend
+uvicorn main:app --reload
+```
 
 ## 📞 Support
 
-Nếu gặp vấn đề:
-1. Check health endpoints trước: `/api/v1/health`
-2. Verify BigQuery credentials và permissions
-3. Check application logs
-4. Test với sample data
+Để được hỗ trợ hoặc báo lỗi, vui lòng tạo issue trong repository này.
 
 ---
 
-**Happy Coding! 🚀** 
+**🌟 AirVXM Platform - Monitoring Air Quality in Hanoi**
+
+*Được phát triển với ❤️ bằng FastAPI + BigQuery + Vanilla JS* 

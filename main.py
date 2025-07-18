@@ -1,6 +1,6 @@
 """
-FastAPI Application Entry Point
-Khởi tạo và cấu hình ứng dụng chính
+AirVXM Platform - FastAPI Backend
+Hệ thống giám sát chất lượng không khí Hà Nội với BigQuery integration
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,8 +9,8 @@ from app.api.router import api_router
 
 # Khởi tạo FastAPI app với metadata
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    description="Simple FastAPI project with BigQuery integration",
+    title="AirVXM Platform API",
+    description="Air Quality Monitoring Platform for Hanoi - Backend API with BigQuery integration",
     version="1.0.0",
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
@@ -32,7 +32,8 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 async def root():
     """Root endpoint - health check"""
     return {
-        "message": "FastAPI BigQuery Application is running!", 
+        "message": "AirVXM Platform API is running!", 
+        "description": "Air Quality Monitoring for Hanoi",
         "version": "1.0.0",
         "status": "healthy"
     }
