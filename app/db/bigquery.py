@@ -3,6 +3,8 @@ BigQuery Database Layer
 Quản lý kết nối và operations với Google BigQuery
 """
 import os
+import json
+import base64
 from typing import Optional
 import pandas as pd
 from google.cloud import bigquery
@@ -12,23 +14,54 @@ from app.core.config import settings
 # Global client instance - sẽ được khởi tạo khi cần
 _bigquery_client: Optional[bigquery.Client] = None
 
+def get_credentials():
+    """
+    Lấy credentials từ environment variable hoặc file
+    Priority: Environment variable > File
+    """
+    # Thử lấy từ environment variable trước (cho production/Railway)
+    credentials_base64 = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_BASE64")
+    
+    if credentials_base64:
+        try:
+            # Decode base64 thành JSON
+            credentials_json = base64.b64decode(credentials_base64).decode('utf-8')
+            credentials_dict = json.loads(credentials_json)
+            
+            # Tạo credentials từ dict
+            credentials = service_account.Credentials.from_service_account_info(credentials_dict)
+            print("✅ Using credentials from environment variable (Railway)")
+            return credentials
+            
+        except Exception as e:
+            print(f"❌ Error decoding credentials from environment: {e}")
+            # Fall back to file method
+    
+    # Fallback: đọc từ file (cho local development)
+    credentials_file = settings.GOOGLE_APPLICATION_CREDENTIALS
+    if os.path.exists(credentials_file):
+        try:
+            credentials = service_account.Credentials.from_service_account_file(credentials_file)
+            print(f"✅ Using credentials from file: {credentials_file}")
+            return credentials
+        except Exception as e:
+            print(f"❌ Error loading credentials from file: {e}")
+            raise e
+    
+    # Không tìm thấy credentials
+    raise FileNotFoundError("No valid credentials found. Please set GOOGLE_APPLICATION_CREDENTIALS_BASE64 environment variable or provide credentials file.")
+
 def get_bigquery_client() -> bigquery.Client:
     """
     Singleton pattern để lấy BigQuery client
-    Sử dụng service account credentials
+    Sử dụng service account credentials từ environment hoặc file
     """
     global _bigquery_client
     
     if _bigquery_client is None:
         try:
-            # Kiểm tra file credentials có tồn tại không
-            if not os.path.exists(settings.GOOGLE_APPLICATION_CREDENTIALS):
-                raise FileNotFoundError(f"Credentials file not found: {settings.GOOGLE_APPLICATION_CREDENTIALS}")
-            
-            # Load service account credentials
-            credentials = service_account.Credentials.from_service_account_file(
-                settings.GOOGLE_APPLICATION_CREDENTIALS
-            )
+            # Lấy credentials (từ env hoặc file)
+            credentials = get_credentials()
             
             # Khởi tạo client với service account credentials
             _bigquery_client = bigquery.Client(
@@ -37,7 +70,6 @@ def get_bigquery_client() -> bigquery.Client:
             )
             
             print(f"✅ BigQuery client initialized for project: {settings.GOOGLE_CLOUD_PROJECT}")
-            print(f"✅ Using credentials: {settings.GOOGLE_APPLICATION_CREDENTIALS}")
             
         except Exception as e:
             print(f"❌ Error initializing BigQuery client: {e}")
@@ -180,10 +212,15 @@ async def bigquery_health_check() -> dict:
     """
     try:
         is_connected = test_connection()
+        
+        # Kiểm tra credentials source
+        credentials_source = "environment" if os.getenv("GOOGLE_APPLICATION_CREDENTIALS_BASE64") else "file"
+        
         return {
             "bigquery": "healthy" if is_connected else "unhealthy",
             "project": settings.GOOGLE_CLOUD_PROJECT,
-            "dataset": settings.BIGQUERY_DATASET
+            "dataset": settings.BIGQUERY_DATASET,
+            "credentials_source": credentials_source
         }
     except Exception as e:
         return {
