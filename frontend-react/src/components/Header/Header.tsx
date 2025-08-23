@@ -5,16 +5,16 @@ interface HeaderProps {
     onRefresh: () => void;
     onToggleSidebar: () => void;
     sidebarOpen: boolean;
-    lastUpdate?: string;
-    onOpenChatbot?: () => void;
+    lastUpdate: string;
+    onOpenChatbot: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
-    onRefresh,
+    onRefresh: _onRefresh, // Prefix with _ to indicate intentionally unused
     onToggleSidebar,
     sidebarOpen,
     lastUpdate,
-    onOpenChatbot
+    onOpenChatbot,
 }) => {
     const formatLastUpdate = (timeString?: string) => {
         if (!timeString) return 'Chưa có dữ liệu';
