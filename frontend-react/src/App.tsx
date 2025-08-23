@@ -42,16 +42,13 @@ const MainApp: React.FC = () => {
         try {
             setLoading(true);
             setError(null);
-            setAqiData([]); // Clear previous data first
+            setAqiData([]);
 
             console.log('🔄 Loading fresh AQI data from BigQuery...');
             const response = await aqiAPI.getLatest();
             console.log('📡 API Response:', response);
-            console.log('📊 Response type:', typeof response);
-            console.log('📊 Response length:', response ? response.length : 'null/undefined');
 
             if (response && response.length > 0) {
-                console.log('📊 AQI values in response:', response.map(d => d.aqi));
                 setAqiData(response);
                 console.log('✅ Real AQI data set successfully');
             } else {
@@ -63,8 +60,6 @@ const MainApp: React.FC = () => {
         } catch (err: any) {
             console.error('❌ Error loading AQI data:', err);
             setError('Không thể tải dữ liệu AQI thật từ BigQuery. Vui lòng kiểm tra kết nối.');
-
-            // KHÔNG có fallback - chỉ hiển thị empty state
             setAqiData([]);
         } finally {
             setLoading(false);
@@ -82,45 +77,15 @@ const MainApp: React.FC = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // Listen for forecast navigation events from map
-    useEffect(() => {
-        const handleForecastEvent = (event: CustomEvent) => {
-            console.log('📍 App: Received forecast event:', event.detail);
-            const { location } = event.detail;
-            if (location) {
-                setSelectedLocation(location);
-                setCurrentPage('forecast');
-                navigate('/forecast');
-            }
-        };
-
-        window.addEventListener('openForecast', handleForecastEvent as EventListener);
-
-        return () => {
-            window.removeEventListener('openForecast', handleForecastEvent as EventListener);
-        };
-    }, [navigate]);
-
     // Handle location selection
     const handleLocationSelect = (location: AQIData) => {
         setSelectedLocation(location);
-        setSidebarOpen(true);
     };
 
     // Handle sidebar toggle
     const handleToggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
-
-    // Handle page navigation (currently unused but kept for future use)
-    // const handlePageChange = (page: 'map' | 'forecast' | 'chatbot') => {
-    //     setCurrentPage(page);
-    //     if (page === 'map') {
-    //         navigate('/');
-    //     } else {
-    //         navigate(`/${page}`);
-    //     }
-    // };
 
     // Handle back to map
     const handleBackToMap = () => {
