@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     selectedLocation,
     onLocationSelect,
     onOpenForecast
-}): JSX.Element | null => {
+}) => {
 
     // Hàm nhảy đến map khi click vào 3 ô thống kê
     const handleJumpToMap = () => {
