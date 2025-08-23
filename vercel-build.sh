@@ -14,13 +14,13 @@ echo "📁 Contents of frontend-react/src directory:"
 ls -la frontend-react/src/
 
 echo ""
-echo "🔍 Checking if App.tsx exists:"
-if [ -f "frontend-react/src/App.tsx" ]; then
-    echo "✅ App.tsx exists"
-    echo "📄 First few lines of App.tsx:"
-    head -5 frontend-react/src/App.tsx
+echo "🔍 Checking if App.js exists:"
+if [ -f "frontend-react/src/App.js" ]; then
+    echo "✅ App.js exists"
+    echo "📄 First few lines of App.js:"
+    head -5 frontend-react/src/App.js
 else
-    echo "❌ App.tsx NOT found!"
+    echo "❌ App.js NOT found!"
 fi
 
 echo ""
