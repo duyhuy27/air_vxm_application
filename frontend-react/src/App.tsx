@@ -9,12 +9,13 @@ import ChatbotPage from './components/Chatbot/ChatbotPage';
 import LoadingOverlay from './components/common/LoadingOverlay';
 import { aqiAPI } from './services/api';
 import './App.css';
+import { AQIData } from './types/aqi';
 
-// Create a client - Updated for Vercel deployment
+// Create a client - Updated for GitHub Pages deployment
 const queryClient = new QueryClient();
 
 // Main App Component
-const App = () => {
+const App: React.FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -25,14 +26,14 @@ const App = () => {
 };
 
 // Main App Logic
-const MainApp = () => {
-    const [aqiData, setAqiData] = useState([]);
+const MainApp: React.FC = () => {
+    const [aqiData, setAqiData] = useState<AQIData[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState(null);
-    const [currentPage, setCurrentPage] = useState('map');
-    const [lastUpdate, setLastUpdate] = useState('');
+    const [selectedLocation, setSelectedLocation] = useState<AQIData | null>(null);
+    const [currentPage, setCurrentPage] = useState<'map' | 'forecast' | 'chatbot'>('map');
+    const [lastUpdate, setLastUpdate] = useState<string>('');
 
     const navigate = useNavigate();
 
@@ -56,7 +57,7 @@ const MainApp = () => {
             }
 
             setLastUpdate(new Date().toISOString());
-        } catch (err) {
+        } catch (err: any) {
             console.error('❌ Error loading AQI data:', err);
             setError('Không thể tải dữ liệu AQI. Vui lòng kiểm tra kết nối.');
             setAqiData([]);
@@ -77,7 +78,7 @@ const MainApp = () => {
     }, []);
 
     // Handle location selection
-    const handleLocationSelect = (location) => {
+    const handleLocationSelect = (location: AQIData) => {
         setSelectedLocation(location);
     };
 

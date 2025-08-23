@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "AirVXM Platform - Frontend ReactJS cho hệ thống giám sát chất lượng không khí Hà Nội",
     "private": true,
+    "homepage": "https://duyhuy27.github.io/air_vxm_application",
     "dependencies": {
         "@types/leaflet": "^1.9.3",
         "@types/leaflet.markercluster": "^1.5.5",
@@ -34,7 +35,9 @@
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
-        "dev": "react-scripts start"
+        "dev": "react-scripts start",
+        "predeploy": "npm run build",
+        "deploy": "gh-pages -d build"
     },
     "eslintConfig": {
         "extends": [
@@ -55,7 +58,8 @@
         ]
     },
     "devDependencies": {
-        "@types/jest": "^27.5.2"
+        "@types/jest": "^27.5.2",
+        "gh-pages": "^6.3.0"
     },
     "engines": {
         "node": ">=18.0.0",
