@@ -11,10 +11,8 @@ import { aqiAPI } from './services/api';
 import './App.css';
 import { AQIData } from './types/aqi';
 
-// Create a client
 const queryClient = new QueryClient();
 
-// Main App Component
 const App: React.FC = () => {
     return (
         <QueryClientProvider client={queryClient}>
@@ -25,7 +23,6 @@ const App: React.FC = () => {
     );
 };
 
-// Main App Logic
 const MainApp: React.FC = () => {
     const [aqiData, setAqiData] = useState<AQIData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -37,75 +34,62 @@ const MainApp: React.FC = () => {
 
     const navigate = useNavigate();
 
-    // Load AQI data
     const loadAQIData = async () => {
         try {
             setLoading(true);
             setError(null);
             setAqiData([]);
 
-            console.log('🔄 Loading fresh AQI data from BigQuery...');
             const response = await aqiAPI.getLatest();
-            console.log('📡 API Response:', response);
 
             if (response && response.length > 0) {
                 setAqiData(response);
-                console.log('✅ Real AQI data set successfully');
             } else {
-                console.log('⚠️ No data received from API');
                 setAqiData([]);
             }
 
             setLastUpdate(new Date().toISOString());
         } catch (err: any) {
-            console.error('❌ Error loading AQI data:', err);
-            setError('Không thể tải dữ liệu AQI thật từ BigQuery. Vui lòng kiểm tra kết nối.');
+            console.error('Error loading AQI data:', err);
+            setError('Không thể tải dữ liệu AQI. Vui lòng kiểm tra kết nối.');
             setAqiData([]);
         } finally {
             setLoading(false);
         }
     };
 
-    // Initial load
     useEffect(() => {
         loadAQIData();
     }, []);
 
-    // Auto-refresh every 5 minutes
     useEffect(() => {
         const interval = setInterval(loadAQIData, 5 * 60 * 1000);
         return () => clearInterval(interval);
     }, []);
 
-    // Handle location selection
     const handleLocationSelect = (location: AQIData) => {
         setSelectedLocation(location);
     };
 
-    // Handle sidebar toggle
     const handleToggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
 
-    // Handle back to map
     const handleBackToMap = () => {
         setCurrentPage('map');
         navigate('/');
     };
 
-    // Handle open chatbot
     const handleOpenChatbot = () => {
         setCurrentPage('chatbot');
         navigate('/chatbot');
     };
 
-    // Handle open forecast
     const handleOpenForecast = () => {
         setCurrentPage('forecast');
         navigate('/forecast');
     };
 
-    // Render current page
     const renderCurrentPage = () => {
         switch (currentPage) {
             case 'forecast':
@@ -129,7 +113,6 @@ const MainApp: React.FC = () => {
                             onLocationSelect={handleLocationSelect}
                             selectedLocation={selectedLocation}
                         />
-
                         <Sidebar
                             isOpen={sidebarOpen}
                             onClose={() => setSidebarOpen(false)}

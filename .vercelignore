@@ -1,59 +1,26 @@
-# Dependencies
-**/node_modules
-**/.next
-**/out
-
-# Build outputs
-**/build
-**/dist
-
-# Environment variables
-**/.env
-**/.env.local
-**/.env.development.local
-**/.env.test.local
-**/.env.production.local
-
-# Logs
-**/npm-debug.log*
-**/yarn-debug.log*
-**/yarn-error.log*
-
-# Python files
-**/__pycache__
-**/*.pyc
-**/*.pyo
-**/*.pyd
-**/.Python
-**/env
-**/pip-log.txt
-**/pip-delete-this-directory.txt
-**/.tox
-**/.coverage
-**/.coverage.*
-**/.cache
-**/nosetests.xml
-**/coverage.xml
-**/*.cover
-**/*.log
-**/.git
-**/.mypy_cache
-**/.pytest_cache
-**/.hypothesis
-
-# Backend files
-app/
+# Backend files - không deploy lên Vercel
 main.py
 requirements.txt
-credentials/
-*.py
-*.log
-*.md
+app/
 scripts/
-backend.log
-Dockerfile
+*.py
+*.sh
+.env
+env.example
 docker-compose.yml
-railway.toml
+Dockerfile
+*.md
+.git/
 
-# Only include frontend-react for Vercel deployment
-!frontend-react/
+# Test files
+test_*.html
+test_*.py
+*.ipynb
+
+# Credentials
+credentials/
+*.json
+
+# Build artifacts
+frontend-react/build/
+frontend-react/node_modules/
