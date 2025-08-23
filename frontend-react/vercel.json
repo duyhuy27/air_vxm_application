@@ -1,6 +1,5 @@
 {
-  "rootDirectory": "frontend-react",
-  "buildCommand": "npm install && npm run build:vercel",
+  "buildCommand": "npm install && npm run build",
   "outputDirectory": "build",
   "framework": "create-react-app",
   "installCommand": "npm install",
