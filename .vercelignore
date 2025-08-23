@@ -19,13 +19,13 @@ test_*.py
 
 # Credentials
 credentials/
-*.json
-!package*.json
-!vercel.json
 
 # Build artifacts
 frontend-react/build/
 frontend-react/node_modules/
 
-# Keep frontend-react folder
+# Keep important files
 !frontend-react/
+!package*.json
+!vercel.json
+!tsconfig.json
