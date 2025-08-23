@@ -1,4 +1,4 @@
-# Backend files - không deploy lên Vercel
+# Backend files
 main.py
 requirements.txt
 app/
@@ -24,8 +24,9 @@ credentials/
 frontend-react/build/
 frontend-react/node_modules/
 
-# Keep important files
+# Explicitly keep frontend
 !frontend-react/
-!package*.json
+!frontend-react/src/
+!frontend-react/package.json
+!frontend-react/tsconfig.json
 !vercel.json
-!tsconfig.json
