@@ -11,7 +11,7 @@ import { aqiAPI } from './services/api';
 import './App.css';
 import { AQIData } from './types/aqi';
 
-// Create a client
+// Create a client - Updated for Vercel deployment
 const queryClient = new QueryClient();
 
 // Main App Component
