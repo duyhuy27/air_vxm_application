@@ -11,7 +11,7 @@ import {
 } from '../types/aqi';
 
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://fastapi-bigquery-app-production.up.railway.app/api/v1';
 
 // Create axios instance
 const apiClient = axios.create({
