@@ -25,6 +25,6 @@ fi
 
 echo ""
 echo "🚀 Starting build process..."
-cd frontend-react
-npm install
-npm run build
+cd frontend-react && npm install && npm run build
+cd ..
+echo "✅ Build completed!"
