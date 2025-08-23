@@ -202,3 +202,4 @@ MIT License - xem file LICENSE để biết chi tiết.
 - ✅ Automatic fallback: env vars → file credentials
 - ✅ Enhanced health check với credentials source info
 - ✅ Improved deployment scripts với better UX # Force redeploy Sun Aug 24 02:01:04 +07 2025
+# Build trigger: Sun Aug 24 02:57:52 +07 2025
