@@ -9,13 +9,12 @@ import ChatbotPage from './components/Chatbot/ChatbotPage';
 import LoadingOverlay from './components/common/LoadingOverlay';
 import { aqiAPI } from './services/api';
 import './App.css';
-import { AQIData } from './types/aqi';
 
 // Create a client
 const queryClient = new QueryClient();
 
 // Main App Component
-const App: React.FC = () => {
+const App = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -26,14 +25,14 @@ const App: React.FC = () => {
 };
 
 // Main App Logic
-const MainApp: React.FC = () => {
-    const [aqiData, setAqiData] = useState<AQIData[]>([]);
+const MainApp = () => {
+    const [aqiData, setAqiData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [selectedLocation, setSelectedLocation] = useState<AQIData | null>(null);
-    const [currentPage, setCurrentPage] = useState<'map' | 'forecast' | 'chatbot'>('map');
-    const [lastUpdate, setLastUpdate] = useState<string>('');
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [currentPage, setCurrentPage] = useState('map');
+    const [lastUpdate, setLastUpdate] = useState('');
 
     const navigate = useNavigate();
 
@@ -57,7 +56,7 @@ const MainApp: React.FC = () => {
             }
 
             setLastUpdate(new Date().toISOString());
-        } catch (err: any) {
+        } catch (err) {
             console.error('❌ Error loading AQI data:', err);
             setError('Không thể tải dữ liệu AQI. Vui lòng kiểm tra kết nối.');
             setAqiData([]);
@@ -78,7 +77,7 @@ const MainApp: React.FC = () => {
     }, []);
 
     // Handle location selection
-    const handleLocationSelect = (location: AQIData) => {
+    const handleLocationSelect = (location) => {
         setSelectedLocation(location);
     };
 
