@@ -9,7 +9,7 @@ import 'leaflet.heat';
 import { RefreshCw } from 'lucide-react';
 import { AQIData } from '../../types/aqi';
 import { getAQIColor, getAQILabel, getAQILevelInfo } from '../../utils/aqi';
-import '../../../src/types/leaflet-heat.d.ts';
+import '../../types/leaflet-heat.d.ts';
 
 // Mapping tọa độ sang tên khu vực Hà Nội
 const hanoiDistricts: { [key: string]: string } = {
