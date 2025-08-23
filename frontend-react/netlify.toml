@@ -1,6 +1,6 @@
 [build]
   base = "frontend-react"
-  command = "npm run build"
+  command = "npx tsc -p tsconfig.json && npx vite build"
   publish = "dist"
 
 [build.environment]
