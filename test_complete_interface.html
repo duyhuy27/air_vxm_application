@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Giao Diện Hoàn Chỉnh - AirVXM Platform</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-pulse {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .update-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-chatbot {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-chatbot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-toggle {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .map-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            min-height: 600px;
+            position: relative;
+        }
+
+        .map-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            height: 100%;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .sidebar-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .test-section h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        /* Stats Summary - 3 ô thống kê */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Ranking List */
+        .ranking-list h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ranking-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 8px;
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ranking-item:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .rank-number {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .district-info h4 {
+            margin: 0 0 5px 0;
+            color: #2d3748;
+            font-size: 1rem;
+        }
+
+        .district-info p {
+            margin: 0;
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .aqi-value {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .aqi-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .aqi-label {
+            font-size: 0.7rem;
+            color: #718096;
+            text-align: center;
+        }
+
+        /* AQI Legend */
+        .aqi-legend-section {
+            margin-top: 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .aqi-legend-section h3 {
+            margin: 0 0 15px 0;
+            color: #1a202c;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 0;
+        }
+
+        .legend-emoji {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 16px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .good { background: #228B22; }
+        .moderate { background: #9ACD32; }
+        .unhealthy-sensitive { background: #FFD700; }
+        .unhealthy { background: #FF8C00; }
+        .very-unhealthy { background: #FF0000; }
+        .hazardous { background: #8B0000; }
+
+        /* Forecast Preview */
+        .forecast-preview {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .forecast-preview h3 {
+            margin: 0 0 15px 0;
+            color: #1e40af;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .forecast-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .forecast-time {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .forecast-aqi {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #dc2626;
+            margin-bottom: 5px;
+        }
+
+        .forecast-weather {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .highlight h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        .highlight p {
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        🌬️
+                        <div class="logo-pulse"></div>
+                    </div>
+                    <div class="logo-text">
+                        <h1>AirVXM Platform</h1>
+                        <div class="logo-subtitle">Giám sát chất lượng không khí Hà Nội</div>
+                    </div>
+                </div>
+
+                <div class="header-info">
+                    <div class="update-time">
+                        🕐 Cập nhật: Vừa xong
+                    </div>
+                    <button class="btn-chatbot">
+                        🤖 AI Chatbot
+                    </button>
+                    <button class="btn-toggle">
+                        📊 Mở Bảng thông tin
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Highlight Section -->
+        <div class="highlight">
+            <h2>🎯 Giao Diện Hoàn Chỉnh Đã Sẵn Sàng!</h2>
+            <p>3 ô thống kê + Tên khu vực + Dự báo LSTM + Click map để back</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Map Section -->
+            <div class="map-section">
+                <h3 style="margin: 0 0 20px 0; color: #2d3748;">🗺️ Bản đồ Hà Nội - 30 điểm quan trắc</h3>
+                <div class="map-placeholder">
+                    🗺️ Bản đồ với 30 cờ cắm điểm theo màu AQI
+                    <br>Click vào bản đồ để back về map ban đầu
+                </div>
+            </div>
+
+            <!-- Sidebar Section -->
+            <div class="sidebar-section">
+                <h3 style="margin: 0 0 20px 0; color: #2d3748;">📊 Bảng thông tin AQI</h3>
+
+                <!-- Stats Summary - 3 ô có thể click -->
+                <div class="stats-summary">
+                    <div class="stat-item" onclick="alert('Click vào ô này sẽ nhảy đến map!')">
+                        <div class="stat-value">30</div>
+                        <div class="stat-label">Trạm quan trắc</div>
+                    </div>
+                    <div class="stat-item" onclick="alert('Click vào ô này sẽ nhảy đến map!')">
+                        <div class="stat-value">78</div>
+                        <div class="stat-label">AQI Trung bình</div>
+                    </div>
+                    <div class="stat-item" onclick="alert('Click vào ô này sẽ nhảy đến map!')">
+                        <div class="stat-value">98</div>
+                        <div class="stat-label">AQI Cao nhất</div>
+                    </div>
+                </div>
+
+                <!-- Ranking List -->
+                <div class="ranking-list">
+                    <h3>
+                        🏆 Top 10 Điểm quan trắc
+                    </h3>
+
+                    <div class="ranking-items">
+                        <div class="ranking-item" onclick="alert('Click vào điểm này sẽ nhảy đến cờ trên map!')">
+                            <div class="rank-number">1</div>
+                            <div class="district-info">
+                                <h4>Hoàn Kiếm</h4>
+                                <p>Tọa độ: 21.029, 105.854</p>
+                            </div>
+                            <div class="aqi-value">
+                                <div class="aqi-number" style="background-color: #FFD700;">98</div>
+                                <div class="aqi-label">Trung bình</div>
+                            </div>
+                        </div>
+
+                        <div class="ranking-item" onclick="alert('Click vào điểm này sẽ nhảy đến cờ trên map!')">
+                            <div class="rank-number">2</div>
+                            <div class="district-info">
+                                <h4>Đống Đa</h4>
+                                <p>Tọa độ: 21.017, 105.808</p>
+                            </div>
+                            <div class="aqi-value">
+                                <div class="aqi-number" style="background-color: #FF8C00;">92</div>
+                                <div class="aqi-label">Kém</div>
+                            </div>
+                        </div>
+
+                        <div class="ranking-item" onclick="alert('Click vào điểm này sẽ nhảy đến cờ trên map!')">
+                            <div class="rank-number">3</div>
+                            <div class="district-info">
+                                <h4>Hai Bà Trưng</h4>
+                                <p>Tọa độ: 21.008, 105.853</p>
+                            </div>
+                            <div class="aqi-value">
+                                <div class="aqi-number" style="background-color: #FF8C00;">88</div>
+                                <div class="aqi-label">Kém</div>
+                            </div>
+                        </div>
+
+                        <div class="ranking-item" onclick="alert('Click vào điểm này sẽ nhảy đến cờ trên map!')">
+                            <div class="rank-number">4</div>
+                            <div class="district-info">
+                                <h4>Hoàng Mai</h4>
+                                <p>Tọa độ: 20.974, 105.873</p>
+                            </div>
+                            <div class="aqi-value">
+                                <div class="aqi-number" style="background-color: #FFD700;">85</div>
+                                <div class="aqi-label">Trung bình</div>
+                            </div>
+                        </div>
+
+                        <div class="ranking-item" onclick="alert('Click vào điểm này sẽ nhảy đến cờ trên map!')">
+                            <div class="rank-number">5</div>
+                            <div class="district-info">
+                                <h4>Long Biên</h4>
+                                <p>Tọa độ: 21.046, 105.893</p>
+                            </div>
+                            <div class="aqi-value">
+                                <div class="aqi-number" style="background-color: #FFD700;">82</div>
+                                <div class="aqi-label">Trung bình</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AQI Legend -->
+                <div class="aqi-legend-section">
+                    <h3>🎨 Thang màu mức độ AQI</h3>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <span class="legend-emoji">😊</span>
+                            <div class="legend-color good"></div>
+                            <span>Tốt (0-50 AQI)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-emoji">🙂</span>
+                            <div class="legend-color moderate"></div>
+                            <span>Khá (51-100 AQI)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-emoji">😐</span>
+                            <div class="legend-color unhealthy-sensitive"></div>
+                            <span>Trung bình (101-150 AQI)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-emoji">😷</span>
+                            <div class="legend-color unhealthy"></div>
+                            <span>Kém (151-200 AQI)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-emoji">😰</span>
+                            <div class="legend-color very-unhealthy"></div>
+                            <span>Rất kém (201-300 AQI)</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-emoji">😵</span>
+                            <div class="legend-color hazardous"></div>
+                            <span>Nguy hiểm (>300 AQI)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forecast Preview -->
+                <div class="forecast-preview">
+                    <h3>🧠 Dự báo LSTM - Preview</h3>
+                    <p style="margin: 0 0 15px 0; color: #475569; font-size: 0.9rem;">
+                        Click vào điểm quan trắc → Nút "Chi tiết" → Trang dự báo LSTM
+                    </p>
+                    <div class="forecast-grid">
+                        <div class="forecast-item">
+                            <div class="forecast-time">Bây giờ</div>
+                            <div class="forecast-aqi">76</div>
+                            <div class="forecast-weather">☁️ 30%</div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-time">+1h</div>
+                            <div class="forecast-aqi">79</div>
+                            <div class="forecast-weather">☁️ 50%</div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-time">+2h</div>
+                            <div class="forecast-aqi">77</div>
+                            <div class="forecast-weather">☁️ 70%</div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-time">+3h</div>
+                            <div class="forecast-aqi">81</div>
+                            <div class="forecast-weather">☁️ 90%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="test-section">
+            <h2>✨ Tính Năng Đã Hoàn Thành</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                    <h4 style="margin: 0 0 15px 0; color: #0c4a6e;">✅ 3 Ô Thống Kê Có Thể Click:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #0369a1;">
+                        <li><strong>30 Trạm quan trắc:</strong> Click → nhảy đến map</li>
+                        <li><strong>78 AQI Trung bình:</strong> Click → nhảy đến map</li>
+                        <li><strong>98 AQI Cao nhất:</strong> Click → nhảy đến map</li>
+                    </ul>
+                </div>
+
+                <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 4px solid #22c55e;">
+                    <h4 style="margin: 0 0 15px 0; color: #166534;">✅ Tên Khu Vực Thay Vì Tọa Độ:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #16a34a;">
+                        <li><strong>Hoàn Kiếm</strong> thay vì "Điểm 21.029, 105.854"</li>
+                        <li><strong>Đống Đa</strong> thay vì "Điểm 21.017, 105.808"</li>
+                        <li><strong>Hai Bà Trưng</strong> thay vì "Điểm 21.008, 105.853"</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                    <h4 style="margin: 0 0 15px 0; color: #92400e;">✅ Nút "Chi tiết" → Dự Báo LSTM:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #a16207;">
+                        <li><strong>Dự báo theo giờ:</strong> 24 giờ tiếp theo</li>
+                        <li><strong>Dự báo theo ngày:</strong> 7 ngày tiếp theo</li>
+                        <li><strong>Mô hình LSTM:</strong> Dự đoán chính xác</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fce7f3; padding: 20px; border-radius: 8px; border-left: 4px solid #ec4899;">
+                    <h4 style="margin: 0 0 15px 0; color: #be185d;">✅ Click Map → Back Về Map Ban Đầu:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #be185d;">
+                        <li><strong>Click vào bản đồ:</strong> Reset view về map cắm cờ</li>
+                        <li><strong>Focus vào map:</strong> Hiển thị 30 điểm quan trắc</li>
+                        <li><strong>Navigation dễ dàng:</strong> Map ↔ Forecast</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="test-section">
+            <h2>📋 Tóm Tắt Giao Diện Hoàn Chỉnh</h2>
+            
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                <h4 style="margin: 0 0 15px 0; color: #0c4a6e;">🎯 Luồng Hoạt Động:</h4>
+                <ol style="margin: 0; padding-left: 20px; color: #0369a1; line-height: 1.8;">
+                    <li><strong>Trang chính:</strong> Map với 30 cờ cắm điểm theo màu AQI + Sidebar với 3 ô thống kê</li>
+                    <li><strong>Click 3 ô thống kê:</strong> Nhảy đến map, focus vào điểm quan trắc</li>
+                    <li><strong>Click điểm quan trắc:</strong> Hiển thị thông tin chi tiết + Nút "Chi tiết"</li>
+                    <li><strong>Click "Chi tiết":</strong> Mở trang dự báo LSTM (giờ + ngày)</li>
+                    <li><strong>Click vào bản đồ:</strong> Back về map cắm cờ ban đầu</li>
+                </ol>
+            </div>
+
+            <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border-left: 4px solid #22c55e; margin-top: 15px;">
+                <h4 style="margin: 0 0 15px 0; color: #166534;">🚀 Kết Quả:</h4>
+                <p style="margin: 0; color: #16a34a; line-height: 1.6;">
+                    <strong>Giao diện hoàn chỉnh</strong> đã sẵn sàng với tất cả tính năng yêu cầu:
+                    <br>• <strong>3 ô thống kê có thể click</strong> để nhảy đến map
+                    <br>• <strong>Tên khu vực thay vì tọa độ</strong> trong bảng thông tin
+                    <br>• <strong>Nút "Chi tiết" mở dự báo LSTM</strong> theo giờ và ngày
+                    <br>• <strong>Click map để back</strong> về trang ban đầu
+                    <br>• <strong>Navigation mượt mà</strong> giữa các trang
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

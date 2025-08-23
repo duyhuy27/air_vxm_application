@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Frontend API Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🧪 Test Frontend API Connection</h1>
+
+    <button onclick="testAPIConnection()">Test API Connection</button>
+    <button onclick="testDirectFetch()">Test Direct Fetch</button>
+    <button onclick="clearResults()">Clear Results</button>
+
+    <div id="results"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+        const resultsDiv = document.getElementById('results');
+
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            resultsDiv.appendChild(div);
+        }
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        async function testAPIConnection() {
+            addResult('🔄 Testing API connection...', 'info');
+
+            try {
+                // Test 1: Health check
+                const healthResponse = await fetch(`${API_BASE.replace('/api/v1', '')}/health`);
+                const healthData = await healthResponse.json();
+                addResult(`✅ Health check: ${JSON.stringify(healthData)}`, 'success');
+
+                // Test 2: AQI latest
+                const aqiResponse = await fetch(`${API_BASE}/aqi/latest`);
+                const aqiData = await aqiResponse.json();
+                addResult(`✅ AQI latest: ${aqiData.length} locations received`, 'success');
+                addResult(`📊 First location: ${JSON.stringify(aqiData[0], null, 2)}`, 'info');
+
+                // Test 3: Check data structure
+                if (aqiData.length > 0) {
+                    const firstLocation = aqiData[0];
+                    const requiredFields = ['latitude', 'longitude', 'aqi', 'pm2_5'];
+                    const missingFields = requiredFields.filter(field => !(field in firstLocation));
+
+                    if (missingFields.length === 0) {
+                        addResult('✅ Data structure is valid', 'success');
+                    } else {
+                        addResult(`❌ Missing fields: ${missingFields.join(', ')}`, 'error');
+                    }
+                }
+
+            } catch (error) {
+                addResult(`❌ API Error: ${error.message}`, 'error');
+                console.error('API Test Error:', error);
+            }
+        }
+
+        async function testDirectFetch() {
+            addResult('🔄 Testing direct fetch...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/aqi/latest', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                addResult(`📡 Response status: ${response.status} ${response.statusText}`, 'info');
+                addResult(`📡 Response headers: ${JSON.stringify(Object.fromEntries(response.headers))}`, 'info');
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Direct fetch successful: ${data.length} items`, 'success');
+                    addResult(`📊 Sample data: ${JSON.stringify(data[0], null, 2)}`, 'info');
+                } else {
+                    const errorText = await response.text();
+                    addResult(`❌ Direct fetch failed: ${errorText}`, 'error');
+                }
+
+            } catch (error) {
+                addResult(`❌ Direct fetch error: ${error.message}`, 'error');
+                console.error('Direct Fetch Error:', error);
+            }
+        }
+
+        // Auto-run tests on page load
+        window.onload = function () {
+            addResult('🚀 Page loaded, ready for testing', 'info');
+        };
+    </script>
+</body>
+
+</html>
+

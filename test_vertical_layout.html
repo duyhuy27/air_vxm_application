@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Vertical AQI Legend - AirVXM Platform</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .test-section h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        /* Vertical AQI Legend */
+        .aqi-legend-vertical {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            max-width: 280px;
+            backdrop-filter: blur(10px);
+        }
+
+        .aqi-legend-vertical h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-items-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .legend-item-vertical {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+            color: #2d3748;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+        }
+
+        .legend-item-vertical:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-emoji-vertical {
+            font-size: 1.1rem;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .legend-color-vertical {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+            transition: all 0.2s ease;
+        }
+
+        .legend-item-vertical:hover .legend-color-vertical {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend-level-vertical {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a202c;
+            min-width: 70px;
+        }
+
+        .legend-range-vertical {
+            font-size: 0.75rem;
+            color: #718096;
+            font-style: italic;
+        }
+
+        /* Map Background Simulation */
+        .map-background {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .map-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, #cbd5e1 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, #94a3b8 1px, transparent 1px),
+                linear-gradient(45deg, transparent 49%, #e2e8f0 49%, #e2e8f0 51%, transparent 51%);
+            background-size: 50px 50px, 30px 30px, 20px 20px;
+            border-radius: 12px;
+            opacity: 0.3;
+        }
+
+        .map-content {
+            position: relative;
+            z-index: 1;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        .map-content h3 {
+            margin: 0 0 15px 0;
+            color: #1e293b;
+        }
+
+        .map-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .map-feature {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(226, 232, 240, 0.6);
+        }
+
+        .map-feature h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .map-feature p {
+            margin: 0;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .comparison-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .comparison-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+
+        .improvement-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .improvement-info h4 {
+            margin: 0 0 10px 0;
+            color: #2d5a2d;
+            font-size: 1rem;
+        }
+
+        .improvement-info ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🎨 Test AQI Legend Layout Dọc Rõ Ràng</h1>
+        </header>
+
+        <!-- Map Background Simulation -->
+        <div class="map-background">
+            <div class="map-content">
+                <h3>🗺️ Bản đồ Hà Nội (Mô phỏng)</h3>
+                <div class="map-features">
+                    <div class="map-feature">
+                        <h4>Đường vành đai 3.5</h4>
+                        <p>Đường chính</p>
+                    </div>
+                    <div class="map-feature">
+                        <h4>Phố Miếu</h4>
+                        <p>Đường phố</p>
+                    </div>
+                    <div class="map-feature">
+                        <h4>Xuân P</h4>
+                        <p>Khu vực</p>
+                    </div>
+                    <div class="map-feature">
+                        <h4>Vinhomes Smart City</h4>
+                        <p>Dự án</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section -->
+        <div class="test-section">
+            <h2>📏 AQI Legend Layout Dọc (Như trong ảnh)</h2>
+
+            <div class="aqi-legend-vertical">
+                <h3>🌬️ Chỉ số AQI</h3>
+                <div class="legend-items-vertical">
+                    <div class="legend-item-vertical">
+                        <span class="legend-emoji-vertical">😊</span>
+                        <div class="legend-color-vertical" style="background-color: #00E400;"></div>
+                        <span class="legend-level-vertical">Tốt</span>
+                        <span class="legend-range-vertical">(0-50)</span>
+                    </div>
+                    <div class="legend-item-vertical">
+                        <span class="legend-emoji-vertical">😐</span>
+                        <div class="legend-color-vertical" style="background-color: #FFFF00;"></div>
+                        <span class="legend-level-vertical">Trung bình</span>
+                        <span class="legend-range-vertical">(51-100)</span>
+                    </div>
+                    <div class="legend-item-vertical">
+                        <span class="legend-emoji-vertical">😷</span>
+                        <div class="legend-color-vertical" style="background-color: #FF7E00;"></div>
+                        <span class="legend-level-vertical">Kém</span>
+                        <span class="legend-range-vertical">(101-150)</span>
+                    </div>
+                    <div class="legend-item-vertical">
+                        <span class="legend-emoji-vertical">😰</span>
+                        <div class="legend-color-vertical" style="background-color: #FF0000;"></div>
+                        <span class="legend-level-vertical">Xấu</span>
+                        <span class="legend-range-vertical">(151-200)</span>
+                    </div>
+                    <div class="legend-item-vertical">
+                        <span class="legend-emoji-vertical">😵</span>
+                        <div class="legend-color-vertical" style="background-color: #8F3F97;"></div>
+                        <span class="legend-level-vertical">Rất xấu</span>
+                        <span class="legend-range-vertical">(201-300)</span>
+                    </div>
+                    <div class="legend-item-vertical">
+                        <span class="legend-emoji-vertical">🚨</span>
+                        <div class="legend-color-vertical" style="background-color: #7E0023;"></div>
+                        <span class="legend-level-vertical">Nguy hại</span>
+                        <span class="legend-range-vertical">(301+)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="test-section">
+            <h2>📊 So Sánh Layout</h2>
+
+            <div class="comparison">
+                <div class="comparison-item">
+                    <h3>🔄 Trước đây (Layout ngang)</h3>
+                    <ul>
+                        <li>Grid 2 cột</li>
+                        <li>Khó đọc</li>
+                        <li>Không rõ ràng</li>
+                        <li>Không giống ảnh</li>
+                    </ul>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>✅ Bây giờ (Layout dọc)</h3>
+                    <ul>
+                        <li>Flexbox dọc</li>
+                        <li>Dễ đọc</li>
+                        <li>Rõ ràng</li>
+                        <li>Giống như trong ảnh</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="improvement-info">
+                <h4>🎯 Cải thiện chính:</h4>
+                <ul>
+                    <li><strong>Layout dọc rõ ràng:</strong> Mỗi mức độ AQI trên một dòng riêng</li>
+                    <li><strong>Background cho mỗi item:</strong> Mỗi dòng có background trắng và border</li>
+                    <li><strong>Hover effect:</strong> Di chuyển sang phải khi hover</li>
+                    <li><strong>Font size phù hợp:</strong> Dễ đọc và rõ ràng</li>
+                    <li><strong>Spacing hợp lý:</strong> Khoảng cách giữa các item vừa phải</li>
+                    <li><strong>Giống ảnh:</strong> Layout và style giống như trong ảnh bạn cung cấp</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="test-section">
+            <h2>✨ Tính Năng Layout Dọc</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                    <h4 style="margin: 0 0 8px 0; color: #0c4a6e;">📱 Dễ đọc</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #0369a1;">Mỗi mức độ AQI trên một dòng riêng, dễ theo
+                        dõi</p>
+                </div>
+
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e;">
+                    <h4 style="margin: 0 0 8px 0; color: #166534;">🎨 Background rõ ràng</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #16a34a;">Mỗi item có background trắng và border để
+                        phân biệt</p>
+                </div>
+
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                    <h4 style="margin: 0 0 8px 0; color: #92400e;">⚡ Hover Effects</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #d97706;">Hiệu ứng hover với transform translateX</p>
+                </div>
+
+                <div style="background: #fce7f3; padding: 15px; border-radius: 8px; border-left: 4px solid #ec4899;">
+                    <h4 style="margin: 0 0 8px 0; color: #9d174d;">🎯 Giống ảnh</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #be185d;">Layout và style giống như trong ảnh bạn
+                        cung cấp</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test AQI Color Scale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .aqi-scale {
+            margin: 20px 0;
+        }
+
+        .aqi-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .color-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .emoji {
+            font-size: 24px;
+        }
+
+        .level {
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .range {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🎨 Test Thang Màu AQI Mới</h1>
+
+    <div class="aqi-scale">
+        <h2>Thang màu mức độ AQI (Cập nhật)</h2>
+
+        <div class="aqi-item">
+            <span class="emoji">😊</span>
+            <div class="color-box" style="background-color: #00E400;"></div>
+            <span class="level">Tốt</span>
+            <span class="range">(0 - 50)</span>
+        </div>
+
+        <div class="aqi-item">
+            <span class="emoji">😐</span>
+            <div class="color-box" style="background-color: #FFFF00;"></div>
+            <span class="level">Trung bình</span>
+            <span class="range">(51 - 100)</span>
+        </div>
+
+        <div class="aqi-item">
+            <span class="emoji">😷</span>
+            <div class="color-box" style="background-color: #FF7E00;"></div>
+            <span class="level">Kém</span>
+            <span class="range">(101 - 150)</span>
+        </div>
+
+        <div class="aqi-item">
+            <span class="emoji">😰</span>
+            <div class="color-box" style="background-color: #FF0000;"></div>
+            <span class="level">Xấu</span>
+            <span class="range">(151 - 200)</span>
+        </div>
+
+        <div class="aqi-item">
+            <span class="emoji">😵</span>
+            <div class="color-box" style="background-color: #8F3F97;"></div>
+            <span class="level">Rất xấu</span>
+            <span class="range">(201 - 300)</span>
+        </div>
+
+        <div class="aqi-item">
+            <span class="emoji">🚨</span>
+            <div class="color-box" style="background-color: #7E0023;"></div>
+            <span class="level">Nguy hại</span>
+            <span class="range">(301 - 500)</span>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #e8f5e8; border-radius: 8px;">
+        <h3>✅ Đã cập nhật thành công:</h3>
+        <ul>
+            <li>Thang màu AQI mới theo chuẩn quốc tế</li>
+            <li>Màu sắc chính xác: #00E400, #FFFF00, #FF7E00, #FF0000, #8F3F97, #7E0023</li>
+            <li>Emoji phù hợp với mức độ</li>
+            <li>Giữ nguyên chatbot AI</li>
+            <li>Nút "Chi tiết" đã có chức năng</li>
+        </ul>
+    </div>
+</body>
+
+</html>

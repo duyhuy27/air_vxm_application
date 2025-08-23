@@ -12,7 +12,7 @@ import httpx
 # Add app to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-BASE_URL = "http://localhost:8000/api/v1"
+BASE_URL = "http://localhost:8001/api/v1"
 
 async def test_aqi_endpoints():
     """Test all AQI endpoints"""

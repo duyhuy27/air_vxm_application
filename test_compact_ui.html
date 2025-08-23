@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Compact AQI Legend - AirVXM Platform</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .test-section h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        /* Compact AQI Legend */
+        .aqi-legend-compact {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            max-width: 280px;
+            backdrop-filter: blur(10px);
+        }
+
+        .aqi-legend-compact h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-items-compact {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+        }
+
+        .legend-item-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            color: #2d3748;
+            padding: 0.3rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            min-width: 0;
+        }
+
+        .legend-item-compact:hover {
+            background: rgba(0, 0, 0, 0.03);
+            transform: scale(1.02);
+        }
+
+        .legend-emoji-compact {
+            font-size: 1.1rem;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+
+        .legend-color-compact {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+            transition: all 0.2s ease;
+        }
+
+        .legend-item-compact:hover .legend-color-compact {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend-level-compact {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #1a202c;
+            min-width: 50px;
+        }
+
+        .legend-range-compact {
+            font-size: 0.7rem;
+            color: #718096;
+            font-style: italic;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .comparison-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .comparison-item h3 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+            color: #2d3748;
+        }
+
+        .size-info {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .size-info h4 {
+            margin: 0 0 8px 0;
+            color: #2d5a2d;
+            font-size: 0.9rem;
+        }
+
+        .size-info ul {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.8rem;
+            color: #4a5568;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🎨 Test Giao Diện AQI Legend Nhỏ Gọn</h1>
+        </header>
+
+        <!-- Test Section -->
+        <div class="test-section">
+            <h2>📏 AQI Legend Nhỏ Gọn (Layout Ngang)</h2>
+
+            <div class="aqi-legend-compact">
+                <h3>🌬️ AQI</h3>
+                <div class="legend-items-compact">
+                    <div class="legend-item-compact">
+                        <span class="legend-emoji-compact">😊</span>
+                        <div class="legend-color-compact" style="background-color: #00E400;"></div>
+                        <span class="legend-level-compact">Tốt</span>
+                        <span class="legend-range-compact">(0-50)</span>
+                    </div>
+                    <div class="legend-item-compact">
+                        <span class="legend-emoji-compact">😐</span>
+                        <div class="legend-color-compact" style="background-color: #FFFF00;"></div>
+                        <span class="legend-level-compact">TB</span>
+                        <span class="legend-range-compact">(51-100)</span>
+                    </div>
+                    <div class="legend-item-compact">
+                        <span class="legend-emoji-compact">😷</span>
+                        <div class="legend-color-compact" style="background-color: #FF7E00;"></div>
+                        <span class="legend-level-compact">Kém</span>
+                        <span class="legend-range-compact">(101-150)</span>
+                    </div>
+                    <div class="legend-item-compact">
+                        <span class="legend-emoji-compact">😰</span>
+                        <div class="legend-color-compact" style="background-color: #FF0000;"></div>
+                        <span class="legend-level-compact">Xấu</span>
+                        <span class="legend-range-compact">(151-200)</span>
+                    </div>
+                    <div class="legend-item-compact">
+                        <span class="legend-emoji-compact">😵</span>
+                        <div class="legend-color-compact" style="background-color: #8F3F97;"></div>
+                        <span class="legend-level-compact">Rất xấu</span>
+                        <span class="legend-range-compact">(201-300)</span>
+                    </div>
+                    <div class="legend-item-compact">
+                        <span class="legend-emoji-compact">🚨</span>
+                        <div class="legend-color-compact" style="background-color: #7E0023;"></div>
+                        <span class="legend-level-compact">Nguy hại</span>
+                        <span class="legend-range-compact">(301+)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="test-section">
+            <h2>📊 So Sánh Kích Thước</h2>
+
+            <div class="comparison">
+                <div class="comparison-item">
+                    <h3>🔄 Trước đây (Cũ)</h3>
+                    <ul>
+                        <li>Max-width: 320px</li>
+                        <li>Padding: 1.5rem</li>
+                        <li>Border-radius: 16px</li>
+                        <li>Layout: Dọc (column)</li>
+                        <li>Gap: 0.8rem</li>
+                        <li>Font-size: 0.9rem</li>
+                    </ul>
+                </div>
+
+                <div class="comparison-item">
+                    <h3>✅ Bây giờ (Mới)</h3>
+                    <ul>
+                        <li>Max-width: 280px</li>
+                        <li>Padding: 1rem</li>
+                        <li>Border-radius: 12px</li>
+                        <li>Layout: Ngang (grid 2 cột)</li>
+                        <li>Gap: 0.4rem</li>
+                        <li>Font-size: 0.75rem</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="size-info">
+                <h4>🎯 Cải thiện chính:</h4>
+                <ul>
+                    <li><strong>Nhỏ gọn hơn:</strong> Giảm từ 320px xuống 280px</li>
+                    <li><strong>Layout ngang:</strong> 2 cột thay vì 1 cột dọc</li>
+                    <li><strong>Tiết kiệm không gian:</strong> Giảm padding và margin</li>
+                    <li><strong>Dễ nhìn:</strong> Thông tin được sắp xếp gọn gàng</li>
+                    <li><strong>Responsive:</strong> Phù hợp với màn hình nhỏ</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="test-section">
+            <h2>✨ Tính Năng Mới</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                    <h4 style="margin: 0 0 8px 0; color: #0c4a6e;">🎨 Layout Grid</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #0369a1;">Sử dụng CSS Grid để sắp xếp 2 cột, tiết
+                        kiệm không gian</p>
+                </div>
+
+                <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e;">
+                    <h4 style="margin: 0 0 8px 0; color: #166534;">📱 Responsive</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #16a34a;">Tự động điều chỉnh theo kích thước màn hình
+                    </p>
+                </div>
+
+                <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                    <h4 style="margin: 0 0 8px 0; color: #92400e;">⚡ Hover Effects</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #d97706;">Hiệu ứng hover mượt mà với transform scale
+                    </p>
+                </div>
+
+                <div style="background: #fce7f3; padding: 15px; border-radius: 8px; border-left: 4px solid #ec4899;">
+                    <h4 style="margin: 0 0 8px 0; color: #9d174d;">🎯 Tối ưu hóa</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #be185d;">Giảm kích thước font và spacing để tiết
+                        kiệm không gian</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

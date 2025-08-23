@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="description"
+        content="AirVXM Platform - Hệ thống giám sát chất lượng không khí Hà Nội với AI dự báo và chatbot thông minh" />
+    <meta name="keywords" content="chất lượng không khí, AQI, Hà Nội, dự báo, LSTM, AI, chatbot" />
+    <meta name="author" content="AirVXM Team" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://airvxm.com/" />
+    <meta property="og:title" content="AirVXM Platform - Giám sát chất lượng không khí Hà Nội" />
+    <meta property="og:description"
+        content="Hệ thống giám sát chất lượng không khí Hà Nội với AI dự báo và chatbot thông minh" />
+    <meta property="og:image" content="%PUBLIC_URL%/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://airvxm.com/" />
+    <meta property="twitter:title" content="AirVXM Platform - Giám sát chất lượng không khí Hà Nội" />
+    <meta property="twitter:description"
+        content="Hệ thống giám sát chất lượng không khí Hà Nội với AI dự báo và chatbot thông minh" />
+    <meta property="twitter:image" content="%PUBLIC_URL%/og-image.jpg" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <!-- Apple touch icon -->
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <title>AirVXM Platform - Giám sát chất lượng không khí Hà Nội</title>
+</head>
+
+<body>
+    <noscript>Bạn cần bật JavaScript để chạy ứng dụng này.</noscript>
+    <div id="root"></div>
+
+    <!-- Loading fallback -->
+    <div id="loading-fallback" style="display: none;">
+        <div style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+        color: #4a5568;
+      ">
+            <div style="text-align: center;">
+                <div style="
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+          "></div>
+                <p>Đang tải AirVXM Platform...</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
+    <script>
+        // Show loading fallback if React takes too long
+        setTimeout(() => {
+            const root = document.getElementById('root');
+            const fallback = document.getElementById('loading-fallback');
+            if (root && !root.hasChildNodes()) {
+                fallback.style.display = 'block';
+            }
+        }, 3000);
+    </script>
+</body>
+
+</html>

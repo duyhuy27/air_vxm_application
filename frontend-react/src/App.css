@@ -1,0 +1,1838 @@
+/* App.css - Main styles for AirVXM Platform */
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #1a202c;
+    background-color: #f8fafc;
+    overflow-x: hidden;
+}
+
+/* App container */
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content */
+.main-content {
+    flex: 1;
+    display: flex;
+    position: relative;
+    margin-top: 0;
+}
+
+/* Main container */
+.main-container {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+/* Header styles - Hoàn chỉnh từ frontend cũ */
+.header {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.logo-pulse {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.logo-text h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0;
+}
+
+.logo-subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.update-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Chatbot Button Styles - Cải thiện giao diện */
+.btn-chatbot {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.8rem 1.6rem !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    text-decoration: none !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+    backdrop-filter: blur(15px) !important;
+}
+
+.btn-chatbot:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+}
+
+.btn-chatbot:active {
+    transform: translateY(0) !important;
+}
+
+.btn-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Map container */
+.map-container {
+    flex: 1;
+    position: relative;
+    background: #f8fafc;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    min-height: calc(100vh - 100px);
+}
+
+/* AQI Flag Marker Styles */
+.aqi-flag-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.flag-container {
+    position: relative;
+    width: 60px;
+    height: 70px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flag-container:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+.flag-pole {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    width: 3px;
+    height: 50px;
+    background: linear-gradient(180deg, #8B4513 0%, #A0522D 100%);
+    border-radius: 2px;
+    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.flag-body {
+    position: absolute;
+    left: 15px;
+    top: 8px;
+    width: 42px;
+    height: 32px;
+    background: var(--flag-color);
+    border-radius: 4px 0 0 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.flag-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.flag-aqi {
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 2px;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+.flag-label {
+    font-size: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    opacity: 0.9;
+    display: block;
+    text-align: center;
+    width: 100%;
+    line-height: 1;
+}
+
+.flag-triangle {
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 16px solid transparent;
+    border-bottom: 16px solid transparent;
+    border-left: 8px solid var(--flag-color);
+    filter: brightness(0.9);
+}
+
+.flag-shadow {
+    position: absolute;
+    left: 8px;
+    bottom: 5px;
+    width: 20px;
+    height: 8px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Hover animation for flag */
+.flag-container:hover .flag-body {
+    animation: flagWave 0.6s ease-in-out;
+}
+
+@keyframes flagWave {
+
+    0%,
+    100% {
+        transform: rotateY(0deg);
+    }
+
+    25% {
+        transform: rotateY(-5deg);
+    }
+
+    75% {
+        transform: rotateY(5deg);
+    }
+}
+
+/* Pulsing effect for active markers */
+.flag-container.active::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border: 2px solid var(--flag-color);
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: flagPulse 2s infinite;
+}
+
+@keyframes flagPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.6;
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* Custom AQI Markers */
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Layer Control Styling - Đặt vị trí riêng biệt, không bị che */
+.leaflet-control-layers {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-width: auto !important;
+    position: absolute !important;
+    top: 1rem !important;
+    right: 2.5rem !important;
+    z-index: 999 !important;
+}
+
+.leaflet-control-layers-expanded {
+    padding: 0 !important;
+    z-index: 998 !important;
+    position: relative !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.leaflet-control-layers-toggle {
+    background-image: none !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(15px) !important;
+    z-index: 999 !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    vertical-align: baseline !important;
+    grid-row: 1 !important;
+    grid-column: 2 !important;
+}
+
+.leaflet-control-layers-toggle::before {
+    content: "☰";
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+    display: block;
+    text-align: center;
+    vertical-align: middle;
+    font-family: monospace;
+    height: 16px;
+    width: 16px;
+    margin: auto;
+}
+
+.leaflet-control-layers-toggle:hover {
+    background: rgba(255, 255, 255, 1) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.leaflet-control-layers label {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #2d3748 !important;
+    margin: 6px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 6px 0 !important;
+    cursor: pointer !important;
+    transition: color 0.2s ease !important;
+}
+
+.leaflet-control-layers label:hover {
+    color: #667eea !important;
+}
+
+.leaflet-control-layers-separator {
+    margin: 8px 0 !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.leaflet-control-layers input[type="checkbox"] {
+    margin-right: 8px !important;
+    transform: scale(1.1) !important;
+    accent-color: #4299e1 !important;
+}
+
+/* Modern AQI Tooltip Styles */
+.custom-tooltip {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.aqi-tooltip {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(16px);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 280px;
+    max-width: 280px;
+    animation: tooltipFadeIn 0.3s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.tooltip-header {
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.tooltip-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 5px 0;
+    line-height: 1.2;
+}
+
+.tooltip-aqi {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 6px;
+}
+
+.aqi-value {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.aqi-status {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    opacity: 0.7;
+}
+
+.tooltip-metrics {
+    margin-bottom: 10px;
+}
+
+.metric-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.metric-item:last-child {
+    border-bottom: none;
+}
+
+.metric-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.metric-icon {
+    font-size: 13px;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.metric-label {
+    font-size: 11px;
+    color: #4a5568;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.metric-value {
+    font-size: 12px;
+    color: #1a202c;
+    font-weight: 700;
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 60px;
+}
+
+.tooltip-advice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border-left: 2px solid #667eea;
+    overflow: hidden;
+}
+
+.advice-icon {
+    font-size: 12px;
+    margin-top: 1px;
+    flex-shrink: 0;
+    width: 16px;
+    text-align: center;
+}
+
+.advice-text {
+    font-size: 11px;
+    color: #4a5568;
+    line-height: 1.3;
+    font-style: italic;
+    flex: 1;
+    word-wrap: break-word;
+}
+
+.tooltip-button {
+    width: auto;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
+}
+
+.tooltip-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.tooltip-button:active {
+    transform: translateY(0);
+}
+
+
+
+/* Leaflet tooltip adjustments */
+.leaflet-tooltip {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* Ẩn arrow mặc định của Leaflet tooltip */
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+    display: none !important;
+}
+
+/* Tùy chỉnh arrow cho tooltip */
+.leaflet-tooltip:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+}
+
+.leaflet-tooltip.leaflet-tooltip-top:after {
+    border-top-color: rgba(255, 255, 255, 0.98);
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.leaflet-tooltip.leaflet-tooltip-bottom:after {
+    border-bottom-color: rgba(255, 255, 255, 0.98);
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.leaflet-tooltip.leaflet-tooltip-left:after {
+    border-left-color: rgba(255, 255, 255, 0.98);
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.leaflet-tooltip.leaflet-tooltip-right:after {
+    border-right-color: rgba(255, 255, 255, 0.98);
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Đảm bảo Header luôn hiển thị trên tooltip */
+.leaflet-popup-pane,
+.leaflet-tooltip-pane,
+.leaflet-marker-pane,
+.leaflet-overlay-pane {
+    z-index: 999 !important;
+}
+
+/* Tooltip hiển thị dưới Header */
+.leaflet-tooltip {
+    z-index: 998 !important;
+    position: relative !important;
+}
+
+.leaflet-popup {
+    z-index: 998 !important;
+    position: relative !important;
+}
+
+/* CSS tooltip tùy chỉnh của chúng ta */
+.custom-tooltip {
+    z-index: 997 !important;
+}
+
+.aqi-tooltip {
+    z-index: 996 !important;
+    position: relative !important;
+}
+
+/* Đảm bảo container chứa tooltip có z-index cao */
+.leaflet-tooltip-pane .leaflet-tooltip {
+    z-index: 10005 !important;
+    position: relative !important;
+}
+
+/* Đảm bảo tooltip container không bị overflow hidden */
+.leaflet-map-pane {
+    z-index: auto !important;
+}
+
+/* leaflet-control-container được xử lý riêng ở phần dưới với z-index cao hơn */
+
+/* Override mọi z-index có thể ảnh hưởng */
+body .leaflet-tooltip,
+body .leaflet-popup,
+body .custom-tooltip,
+body .aqi-tooltip {
+    z-index: 10006 !important;
+}
+
+/* Đảm bảo tooltip không bị clip bởi container cha */
+.leaflet-container,
+.leaflet-map-pane,
+.leaflet-objects-pane,
+.leaflet-overlay-pane {
+    overflow: visible !important;
+}
+
+/* CSS đặc biệt cho tooltip để luôn hiển thị trên cùng */
+.leaflet-tooltip-pane {
+    pointer-events: none;
+    z-index: 10007 !important;
+}
+
+.leaflet-tooltip-pane .leaflet-tooltip {
+    pointer-events: auto;
+    z-index: 10008 !important;
+}
+
+/* Đảm bảo tooltip hiển thị đúng vị trí */
+.leaflet-tooltip,
+.leaflet-popup,
+.custom-tooltip,
+.aqi-tooltip {
+    position: relative !important;
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    will-change: transform !important;
+}
+
+/* CSS cho tooltip với direction tự động */
+.leaflet-tooltip.leaflet-tooltip-top {
+    margin-top: -15px;
+}
+
+.leaflet-tooltip.leaflet-tooltip-bottom {
+    margin-top: 15px;
+}
+
+.leaflet-tooltip.leaflet-tooltip-left {
+    margin-left: -15px;
+}
+
+.leaflet-tooltip.leaflet-tooltip-right {
+    margin-left: 15px;
+}
+
+/* Đảm bảo tooltip không bị che bởi cạnh màn hình */
+.leaflet-tooltip {
+    max-width: 300px;
+    white-space: normal;
+    word-wrap: break-word;
+    box-sizing: border-box;
+}
+
+/* Đảm bảo tooltip luôn hiển thị đầy đủ */
+.leaflet-tooltip {
+    max-width: 300px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Đảm bảo marker cluster hiển thị dưới Header */
+.marker-cluster {
+    z-index: 995 !important;
+}
+
+/* Đảm bảo container chứa các control của Leaflet hiển thị đúng */
+.leaflet-control-container {
+    z-index: 999;
+}
+
+/* MarkerCluster Styles */
+.marker-cluster-small {
+    background-color: rgba(102, 126, 234, 0.8);
+    border: 2px solid rgba(102, 126, 234, 1);
+}
+
+.marker-cluster-small div {
+    background-color: rgba(102, 126, 234, 0.6);
+    border-radius: 50%;
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-cluster-medium {
+    background-color: rgba(255, 126, 0, 0.8);
+    border: 2px solid rgba(255, 126, 0, 1);
+}
+
+.marker-cluster-medium div {
+    background-color: rgba(255, 126, 0, 0.6);
+    border-radius: 50%;
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-cluster-large {
+    background-color: rgba(255, 0, 0, 0.8);
+    border: 2px solid rgba(255, 0, 0, 1);
+}
+
+.marker-cluster-large div {
+    background-color: rgba(255, 0, 0, 0.6);
+    border-radius: 50%;
+    color: white;
+    font-weight: 700;
+    text-align: center;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker-cluster {
+    background-clip: padding-box;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.marker-cluster:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.marker-cluster div {
+    width: 30px;
+    height: 30px;
+    margin-left: 5px;
+    margin-top: 5px;
+    text-align: center;
+    border-radius: 50%;
+    font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.marker-cluster span {
+    line-height: 30px;
+}
+
+.custom-marker .marker-content {
+    transition: all 0.3s ease;
+}
+
+.custom-marker:hover .marker-content {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Map controls container - đặt refresh button tách biệt hoàn toàn với layer control */
+.map-controls {
+    position: absolute;
+    top: 1rem;
+    right: 5rem;
+    z-index: 1001;
+    display: grid;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    gap: 2rem;
+    grid-auto-flow: column;
+}
+
+.btn-refresh {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333;
+    padding: 0.75rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    backdrop-filter: blur(15px);
+    height: 38px !important;
+    min-height: 38px !important;
+    max-height: 38px !important;
+    width: auto;
+    white-space: nowrap;
+    line-height: 1;
+    box-sizing: border-box;
+    vertical-align: baseline;
+    grid-row: 1;
+    grid-column: 1;
+}
+
+.btn-refresh:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 0, 0, 0.2);
+    color: #222;
+}
+
+.btn-refresh:active {
+    transform: translateY(0);
+}
+
+/* AQI Legend - Hoàn chỉnh từ frontend cũ */
+.aqi-legend {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    min-width: 250px;
+    z-index: 500;
+}
+
+.aqi-legend h3 {
+    margin-bottom: 15px;
+    color: #2d3748;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 0;
+}
+
+.legend-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.legend-emoji {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.legend-color {
+    width: 20px;
+    height: 16px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* AQI Color Scheme - Based on Indian AQI standards */
+.good {
+    background: #228B22;
+    /* Dark green */
+}
+
+.moderate {
+    background: #9ACD32;
+    /* Yellow green */
+}
+
+.unhealthy-sensitive {
+    background: #FFD700;
+    /* Gold/Yellow */
+}
+
+.unhealthy {
+    background: #FF8C00;
+    /* Dark orange */
+}
+
+.very-unhealthy {
+    background: #FF0000;
+    /* Red */
+}
+
+.hazardous {
+    background: #8B0000;
+    /* Dark red/maroon */
+}
+
+.legend-color.moderate {
+    background-color: #FFFF00;
+}
+
+.legend-color.unhealthy-sensitive {
+    background-color: #FF7E00;
+}
+
+.legend-color.unhealthy {
+    background-color: #FF0000;
+}
+
+.legend-color.very-unhealthy {
+    background-color: #8F3F97;
+}
+
+.legend-color.hazardous {
+    background-color: #7E0023;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 80px;
+    right: -400px;
+    width: 400px;
+    height: calc(100vh - 80px);
+    background: white;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    overflow-y: auto;
+}
+
+.sidebar.open {
+    right: 0;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.sidebar-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-close {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.sidebar-content {
+    padding: 1.5rem;
+}
+
+/* Stats Summary - Modern Card Design */
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0;
+    width: 100%;
+}
+
+.stat-item {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1.2rem 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.stat-item:hover::before {
+    transform: scaleX(1);
+}
+
+.stat-item:hover {
+    background: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    border-color: rgba(102, 126, 234, 0.3);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    color: #1a202c;
+    line-height: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #4a5568;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    line-height: 1.3;
+    text-align: center;
+    display: block;
+}
+
+/* Ranking List */
+.ranking-list {
+    margin-bottom: 2rem;
+}
+
+.ranking-list h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2d3748;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ranking-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.ranking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ranking-item:hover {
+    background: #f7fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ranking-rank {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rank-number {
+    width: 32px;
+    height: 32px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+.district-info h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.25rem;
+}
+
+.district-info p {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+.aqi-value {
+    text-align: right;
+}
+
+.aqi-number {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.aqi-label {
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+/* Air Quality Tips */
+.air-quality-tips {
+    background: #f0fff4;
+    border: 1px solid #9ae6b4;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.air-quality-tips h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #22543d;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tips-content p {
+    font-size: 0.875rem;
+    color: #22543d;
+    line-height: 1.5;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    color: white;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Banner */
+.error-banner {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fed7d7;
+    border: 1px solid #feb2b2;
+    color: #c53030;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.error-banner button {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.error-banner button:hover {
+    background: #c53030;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 350px;
+    }
+
+    .header-content {
+        padding: 15px 20px;
+    }
+
+    .aqi-legend {
+        left: 1rem;
+        bottom: 1rem;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        padding: 15px 15px;
+    }
+
+    .header-info {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .sidebar {
+        width: 100%;
+        right: -100%;
+    }
+
+    .aqi-legend {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: none;
+    }
+
+    .stats-summary {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+
+    .stat-item {
+        padding: 1rem 0.8rem;
+        min-height: 80px;
+    }
+
+    /* Mobile responsive cho map controls */
+    .map-controls {
+        right: 4rem;
+        gap: 1.5rem;
+    }
+
+    .btn-refresh {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+        height: 34px;
+    }
+
+    .leaflet-control-layers {
+        min-width: 150px !important;
+        padding: 10px !important;
+    }
+
+    .leaflet-control-layers-toggle {
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+    }
+
+    .aqi-tooltip {
+        width: 250px;
+        max-width: 250px;
+        padding: 10px;
+    }
+
+    .tooltip-title {
+        font-size: 13px;
+    }
+
+    .aqi-value {
+        font-size: 18px;
+    }
+
+    .aqi-status {
+        font-size: 9px;
+    }
+
+    .metric-grid {
+        gap: 3px;
+    }
+
+    .metric-item {
+        padding: 3px 0;
+    }
+
+    .metric-icon {
+        font-size: 11px;
+        width: 14px;
+    }
+
+    .metric-label {
+        font-size: 9px;
+    }
+
+    .metric-value {
+        font-size: 9px;
+        min-width: 50px;
+    }
+
+    .advice-text {
+        font-size: 9px;
+    }
+
+    .tooltip-button {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+
+    .flag-container {
+        width: 50px;
+        height: 60px;
+    }
+
+    .flag-body {
+        width: 36px;
+        height: 24px;
+    }
+
+    .flag-aqi {
+        font-size: 10px;
+    }
+
+    .flag-label {
+        font-size: 5px;
+    }
+
+    .marker-cluster div {
+        width: 25px !important;
+        height: 25px !important;
+        margin-left: 4px !important;
+        margin-top: 4px !important;
+        font-size: 10px !important;
+    }
+
+    .marker-cluster span {
+        line-height: 25px !important;
+    }
+
+    .ranking-item {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .aqi-value {
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-text h1 {
+        font-size: 1.25rem;
+    }
+
+    .logo-subtitle {
+        font-size: 0.75rem;
+    }
+
+    .btn-toggle {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .header-content {
+        padding: 10px 15px;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+    }
+
+    .update-time {
+        font-size: 0.75rem;
+    }
+
+    .btn-chatbot {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .header-info {
+        gap: 0.5rem;
+    }
+
+    .logo {
+        gap: 8px;
+    }
+
+    .logo-text {
+        gap: 4px;
+    }
+
+    .logo-subtitle {
+        line-height: 1.2;
+    }
+
+    .btn-toggle {
+        margin: 0;
+    }
+
+    .header {
+        min-height: auto;
+    }
+
+    .logo-text h1 {
+        line-height: 1.2;
+    }
+
+    .logo-icon .logo-pulse {
+        animation: none;
+    }
+
+    .header-content {
+        max-width: 100%;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .logo-pulse {
+        display: none;
+    }
+
+    .header-info {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .update-time {
+        order: -1;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-chatbot {
+        order: 0;
+        margin: 0;
+        margin-right: 0;
+    }
+
+    .btn-toggle {
+        order: 1;
+        margin: 0;
+    }
+
+    .logo-text h1 {
+        margin: 0;
+    }
+
+    .logo-subtitle {
+        margin: 0;
+    }
+
+    .logo {
+        justify-content: center;
+    }
+
+    .logo-text {
+        text-align: center;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+
+    .header {
+        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-icon .logo-pulse {
+        display: none;
+    }
+
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+
+    .logo {
+        gap: 6px;
+    }
+
+    .logo-text {
+        gap: 2px;
+    }
+
+    .logo-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .logo-text h1 {
+        font-size: 1.1rem;
+    }
+
+    .logo-text h1 {
+        line-height: 1.1;
+    }
+
+    .logo-subtitle {
+        line-height: 1.1;
+    }
+
+    .header-content {
+        padding: 8px 12px;
+    }
+
+    .header-info {
+        gap: 0.3rem;
+    }
+
+    .btn-chatbot {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+    }
+
+    .btn-toggle {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.7rem;
+    }
+
+    .update-time {
+        font-size: 0.7rem;
+        padding: 6px 12px;
+    }
+
+    .header {
+        min-height: 60px;
+    }
+
+    .header-content {
+        min-height: 60px;
+    }
+
+    .logo {
+        min-height: 60px;
+    }
+
+    .logo-icon {
+        min-height: 60px;
+    }
+
+    .logo-text {
+        min-height: 60px;
+    }
+
+    .logo-text h1 {
+        min-height: 60px;
+    }
+
+    .logo-subtitle {
+        min-height: 60px;
+    }
+
+    .header-info {
+        min-height: 60px;
+    }
+
+    .update-time {
+        min-height: 60px;
+    }
+
+    .aqi-legend {
+        padding: 1rem;
+    }
+
+    .legend-item {
+        font-size: 0.75rem;
+    }
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Scrollbar styling */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
