@@ -23,12 +23,15 @@ body {
     flex-direction: column;
 }
 
-/* Main content */
+/* Main content - FIX LAYOUT */
 .main-content {
     flex: 1;
     display: flex;
     position: relative;
     margin-top: 0;
+    height: calc(100vh - 60px);
+    /* Ensure proper height */
+    overflow: hidden;
 }
 
 /* Main container */
@@ -180,17 +183,56 @@ body {
     transform: translateY(-1px);
 }
 
-/* Map container */
+/* LEAFLET MAP CONTAINER - COMPLETE FIX */
 .map-container {
     flex: 1;
     position: relative;
     background: #f8fafc;
+    width: 100%;
+    height: calc(100vh - 60px);
+    overflow: hidden;
 }
 
 #map {
     width: 100%;
     height: 100%;
-    min-height: calc(100vh - 100px);
+    position: relative;
+    z-index: 1;
+}
+
+/* CRITICAL: Reset all Leaflet tile layer transforms */
+.leaflet-container {
+    font-family: 'Inter', sans-serif !important;
+}
+
+.leaflet-tile-pane {
+    transform: none !important;
+}
+
+.leaflet-tile {
+    transform: none !important;
+    will-change: auto !important;
+}
+
+.leaflet-layer,
+.leaflet-tile-pane,
+.leaflet-overlay-pane {
+    transform: none !important;
+    transform-origin: initial !important;
+}
+
+/* Ensure map tiles render correctly */
+.leaflet-container .leaflet-tile {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.leaflet-fade-anim .leaflet-tile {
+    transition: none !important;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+    transition: none !important;
 }
 
 /* AQI Flag Marker Styles */
@@ -742,34 +784,46 @@ body .aqi-tooltip {
     z-index: 10006 !important;
 }
 
-/* Đảm bảo tooltip không bị clip bởi container cha */
+/* CRITICAL: Fix tile rendering issues */
 .leaflet-container,
 .leaflet-map-pane,
 .leaflet-objects-pane,
 .leaflet-overlay-pane {
     overflow: visible !important;
+    transform: none !important;
+}
+
+/* Reset all problematic transforms for tile panes */
+.leaflet-tile-container {
+    transform: none !important;
+}
+
+.leaflet-tile-pane .leaflet-tile-container {
+    transform: none !important;
 }
 
 /* CSS đặc biệt cho tooltip để luôn hiển thị trên cùng */
 .leaflet-tooltip-pane {
     pointer-events: none;
     z-index: 10007 !important;
+    transform: none !important;
 }
 
 .leaflet-tooltip-pane .leaflet-tooltip {
     pointer-events: auto;
     z-index: 10008 !important;
+    transform: none !important;
 }
 
-/* Đảm bảo tooltip hiển thị đúng vị trí */
+/* Đảm bảo tooltip hiển thị đúng vị trí - NO TRANSFORMS */
 .leaflet-tooltip,
 .leaflet-popup,
 .custom-tooltip,
 .aqi-tooltip {
     position: relative !important;
-    transform: translateZ(0) !important;
-    backface-visibility: hidden !important;
-    will-change: transform !important;
+    transform: none !important;
+    backface-visibility: visible !important;
+    will-change: auto !important;
 }
 
 /* CSS cho tooltip với direction tự động */

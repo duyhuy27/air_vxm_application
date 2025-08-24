@@ -181,7 +181,32 @@ export const hanoiDistricts: { [key: string]: string } = {
     '21.2333_105.8333': 'Sóc Sơn'
 };
 
-export const getDistrictName = (lat: number, lng: number): string => {
+// Overloaded function for getDistrictName
+export function getDistrictName(location: { latitude: number; longitude: number; location_name?: string }): string;
+export function getDistrictName(lat: number, lng: number): string;
+export function getDistrictName(
+    locationOrLat: { latitude: number; longitude: number; location_name?: string } | number,
+    lng?: number
+): string {
+    // If first parameter is an object (AQIData), use location_name first
+    if (typeof locationOrLat === 'object') {
+        const location = locationOrLat;
+
+        // Ưu tiên sử dụng location_name từ API data
+        if (location.location_name) {
+            return location.location_name;
+        }
+
+        // Fallback về coordinate mapping
+        return getDistrictNameByCoords(location.latitude, location.longitude);
+    }
+
+    // If first parameter is a number (coordinates), use traditional mapping
+    return getDistrictNameByCoords(locationOrLat, lng!);
+}
+
+// Helper function for coordinate-based district lookup
+const getDistrictNameByCoords = (lat: number, lng: number): string => {
     // Thử tìm với độ chính xác cao nhất trước
     const key = `${lat.toFixed(4)}_${lng.toFixed(4)}`;
     if (hanoiDistricts[key]) {
@@ -247,13 +272,13 @@ export const processAQIData = (data: any[]): any[] => {
         ...item,
         time: formatTime(item.time),
         aqi: calculatePM25AQI(item.pm2_5),
-        district: getDistrictName(item.latitude, item.longitude)
+        district: getDistrictName(item) // Use the new overloaded function
     }));
 };
 
 export const groupByDistrict = (data: any[]): Record<string, any[]> => {
     return data.reduce((acc, item) => {
-        const district = getDistrictName(item.latitude, item.longitude);
+        const district = getDistrictName(item); // Use the new overloaded function
         if (!acc[district]) {
             acc[district] = [];
         }

@@ -15,7 +15,7 @@ import { AQIData } from './types/aqi';
 const queryClient = new QueryClient();
 
 // Main App Component
-const App: React.FC = () => {
+function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
@@ -23,10 +23,10 @@ const App: React.FC = () => {
             </Router>
         </QueryClientProvider>
     );
-};
+}
 
 // Main App Logic
-const MainApp: React.FC = () => {
+function MainApp() {
     const [aqiData, setAqiData] = useState<AQIData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -167,6 +167,6 @@ const MainApp: React.FC = () => {
             {renderCurrentPage()}
         </div>
     );
-};
+}
 
 export default App;

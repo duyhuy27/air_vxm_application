@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* Import Leaflet CSS */
+@import 'leaflet/dist/leaflet.css';
+
 body {
     margin: 0;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -15,9 +18,33 @@ code {
         monospace;
 }
 
-/* Leaflet CSS overrides */
+/* CRITICAL: Leaflet CSS fixes for tile rendering */
 .leaflet-container {
     font-family: 'Inter', sans-serif;
+}
+
+/* Reset problematic CSS for tiles */
+.leaflet-container img {
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.leaflet-container .leaflet-tile {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Ensure proper tile display */
+.leaflet-tile-pane {
+    left: 0;
+    top: 0;
+}
+
+.leaflet-tile-container {
+    transform: none !important;
+    -webkit-transform: none !important;
 }
 
 .leaflet-popup-content-wrapper {
