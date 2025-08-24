@@ -11,7 +11,7 @@ import {
 } from '../types/aqi';
 
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://fastapi-bigquery-app-production.up.railway.app/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://fastapi-bigquery-app-production.up.railway.app/api/v1';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -19,10 +19,8 @@ const apiClient = axios.create({
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-    },
+        'Cache-Control': 'no-cache, no-store'
+    }
 });
 
 // Request interceptor

@@ -1,62 +1,25 @@
 
-
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.heat';
+
+// Fix Leaflet default icon paths for production
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
 import { RefreshCw } from 'lucide-react';
 import { AQIData } from '../../types/aqi';
-import { getAQIColor, getAQILabel, getAQILevelInfo } from '../../utils/aqi';
+import { getAQIColor, getAQILabel, getAQILevelInfo, getDistrictName } from '../../utils/aqi';
 import '../../types/leaflet-heat.d.ts';
 
-// Mapping tọa độ sang tên khu vực Hà Nội
-const hanoiDistricts: { [key: string]: string } = {
-  '21.0333_105.8214': 'Ba Đình',
-  '21.0311_105.7924': 'Ba Đình',
-  '21.0285_105.8542': 'Hoàn Kiếm',
-  '21.0278_105.8525': 'Hoàn Kiếm',
-  '21.0075_105.8525': 'Hai Bà Trưng',
-  '21.0144_105.8678': 'Hai Bà Trưng',
-  '21.0167_105.8083': 'Đống Đa',
-  '21.0194_105.8089': 'Đống Đa',
-  '21.0758_105.8217': 'Tây Hồ',
-  '21.0833_105.8167': 'Tây Hồ',
-  '21.0333_105.7833': 'Cầu Giấy',
-  '21.0378_105.7944': 'Cầu Giấy',
-  '21.0167_105.7833': 'Thanh Xuân',
-  '20.9989_105.8092': 'Thanh Xuân',
-  '20.9742_105.8733': 'Hoàng Mai',
-  '20.9833_105.8667': 'Hoàng Mai',
-  '21.0458_105.8925': 'Long Biên',
-  '21.0511_105.8864': 'Long Biên',
-  '21.0139_105.7656': 'Nam Từ Liêm',
-  '21.0167_105.7500': 'Nam Từ Liêm',
-  '21.0667_105.7333': 'Bắc Từ Liêm',
-  '21.0833_105.7500': 'Bắc Từ Liêm',
-  '20.9717_105.7692': 'Hà Đông',
-  '20.9667_105.7667': 'Hà Đông',
-  '21.1333_105.5000': 'Sơn Tây',
-  '21.2500_105.4000': 'Ba Vì',
-  '21.1167_105.4167': 'Phúc Thọ',
-  '21.0833_105.6167': 'Đan Phượng',
-  '21.0000_105.6833': 'Hoài Đức',
-  '21.0333_105.6000': 'Quốc Oai',
-  '21.0167_105.5667': 'Thạch Thất',
-  '20.8667_105.7667': 'Chương Mỹ',
-  '20.8500_105.8000': 'Thanh Oai',
-  '20.8333_105.8833': 'Thường Tín',
-  '20.7167_105.9000': 'Phú Xuyên',
-  '20.7167_105.7667': 'Ứng Hòa',
-  '20.6833_105.8000': 'Mỹ Đức'
-};
 
-// Hàm lấy tên khu vực từ tọa độ
-const getDistrictName = (lat: number, lng: number): string => {
-  const key = `${lat.toFixed(4)}_${lng.toFixed(4)}`;
-  return hanoiDistricts[key] || `Khu vực ${lat.toFixed(3)}, ${lng.toFixed(3)}`;
-};
 
 interface MapProps {
   data: AQIData[];
@@ -76,14 +39,51 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    // Khởi tạo bản đồ
-    const map = L.map(mapRef.current).setView([21.0285, 105.8542], 10);
+    // Khởi tạo bản đồ với proper options
+    const map = L.map(mapRef.current, {
+      preferCanvas: false,
+      fadeAnimation: false,
+      zoomAnimation: false,
+      markerZoomAnimation: false,
+      zoomControl: true,
+      attributionControl: true,
+      crs: L.CRS.EPSG3857
+    }).setView([21.0285, 105.8542], 10);
     mapInstanceRef.current = map;
 
-    // Thêm tile layer (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    // Thêm tile layer với multiple fallbacks và proper caching
+    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      subdomains: ['a', 'b', 'c'],
+      maxZoom: 18,
+      tileSize: 256,
+      zoomOffset: 0,
+      crossOrigin: true,
+      noWrap: false,
+      tms: false,
+
+      errorTileUrl: '',
+      detectRetina: true
+    });
+
+    tileLayer.addTo(map);
+
+    // Force map to refresh tiles properly - multiple attempts
+    setTimeout(() => {
+      map.invalidateSize();
+      console.log('🗺️ Map: First invalidateSize called');
+    }, 100);
+
+    setTimeout(() => {
+      map.invalidateSize();
+      map.redraw();
+      console.log('🗺️ Map: Second invalidateSize and redraw called');
+    }, 500);
+
+    setTimeout(() => {
+      map.invalidateSize();
+      console.log('🗺️ Map: Final invalidateSize called');
+    }, 1000);
 
     // Khởi tạo MarkerClusterGroup với cấu hình tùy chỉnh
     const markerClusterGroup = (L as any).markerClusterGroup({
@@ -303,7 +303,7 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
       const tooltipContent = `
         <div class="aqi-tooltip">
           <div class="tooltip-header">
-            <h3 class="tooltip-title">${getDistrictName(location.latitude, location.longitude)}</h3>
+            <h3 class="tooltip-title">${getDistrictName(location)}</h3>
             <div class="tooltip-aqi">
               <span class="aqi-value" style="color: ${color};">${Math.round(aqi)}</span>
               <span class="aqi-status" style="color: ${color};">${label}</span>

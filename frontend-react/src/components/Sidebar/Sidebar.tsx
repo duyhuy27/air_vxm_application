@@ -120,7 +120,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             gap: '0.5rem'
                         }}>
                             <MapPin size={18} />
-                            {getDistrictName(selectedLocation.latitude, selectedLocation.longitude)}
+                            {getDistrictName(selectedLocation)}
                         </h3>
 
                         <div style={{
@@ -306,7 +306,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                                 fontWeight: '600',
                                                 color: '#2d3748'
                                             }}>
-                                                {getDistrictName(location.latitude, location.longitude)}
+                                                {getDistrictName(location)}
                                             </h4>
                                         </div>
                                     </div>

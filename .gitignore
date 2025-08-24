@@ -144,6 +144,7 @@ credentials/
 !package*.json
 !render.yaml
 !cloudbuild.yaml
+!vercel.json
 
 # Node.js
 node_modules/
