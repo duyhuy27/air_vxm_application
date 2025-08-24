@@ -191,6 +191,9 @@ body {
     width: 100% !important;
     height: calc(100vh - 60px) !important;
     overflow: hidden;
+    /* Debug: Add border to see if container is visible */
+    border: 2px solid red !important;
+    min-height: 400px !important;
 }
 
 #map {
@@ -198,11 +201,49 @@ body {
     height: 100% !important;
     position: relative;
     z-index: 1;
+    /* Debug: Add background to see if map div is visible */
+    background: rgba(0, 255, 0, 0.2) !important;
 }
 
 /* CRITICAL: Reset all Leaflet tile layer transforms */
 .leaflet-container {
     font-family: 'Inter', sans-serif !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: white !important;
+}
+
+/* CRITICAL: Force Leaflet tiles to display */
+.leaflet-tile-pane {
+    z-index: 200 !important;
+}
+
+.leaflet-map-pane {
+    z-index: 400 !important;
+}
+
+.leaflet-control-container {
+    z-index: 1000 !important;
+}
+
+/* CRITICAL: Ensure tile layer visibility */
+.leaflet-layer {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.leaflet-tile {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* CRITICAL: Marker visibility */
+.leaflet-marker-pane {
+    z-index: 600 !important;
+}
+
+.leaflet-marker-icon {
+    z-index: 700 !important;
 }
 
 .leaflet-tile-pane {

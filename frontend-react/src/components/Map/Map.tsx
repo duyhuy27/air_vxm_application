@@ -6,6 +6,14 @@ import 'leaflet.markercluster';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.heat';
+
+// Fix Leaflet default icon paths for production
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
 import { RefreshCw } from 'lucide-react';
 import { AQIData } from '../../types/aqi';
 import { getAQIColor, getAQILabel, getAQILevelInfo, getDistrictName } from '../../utils/aqi';
@@ -36,7 +44,10 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
       preferCanvas: false,
       fadeAnimation: false,
       zoomAnimation: false,
-      markerZoomAnimation: false
+      markerZoomAnimation: false,
+      zoomControl: true,
+      attributionControl: true,
+      crs: L.CRS.EPSG3857
     }).setView([21.0285, 105.8542], 10);
     mapInstanceRef.current = map;
 
@@ -57,10 +68,22 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
 
     tileLayer.addTo(map);
 
-    // Force map to refresh tiles properly
+    // Force map to refresh tiles properly - multiple attempts
     setTimeout(() => {
       map.invalidateSize();
+      console.log('🗺️ Map: First invalidateSize called');
     }, 100);
+
+    setTimeout(() => {
+      map.invalidateSize();
+      map.redraw();
+      console.log('🗺️ Map: Second invalidateSize and redraw called');
+    }, 500);
+
+    setTimeout(() => {
+      map.invalidateSize();
+      console.log('🗺️ Map: Final invalidateSize called');
+    }, 1000);
 
     // Khởi tạo MarkerClusterGroup với cấu hình tùy chỉnh
     const markerClusterGroup = (L as any).markerClusterGroup({
