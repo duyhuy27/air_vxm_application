@@ -1,25 +1,13 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "cd frontend-react && npm ci && npm run build",
+  "outputDirectory": "frontend-react/dist",
+  "installCommand": "cd frontend-react && npm ci",
+  "devCommand": "cd frontend-react && npm run dev",
+  "framework": "vite",
+  "rewrites": [
     {
-      "src": "frontend-react/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "env": {
-    "VITE_API_BASE_URL": "https://fastapi-bigquery-app-production.up.railway.app/api/v1",
-    "NODE_ENV": "production"
-  }
+  ]
 }
