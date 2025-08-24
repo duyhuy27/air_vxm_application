@@ -5,6 +5,8 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  VITE_API_BASE_URL = "https://fastapi-bigquery-app-production.up.railway.app/api/v1"
+  NODE_ENV = "production"
 
 [[redirects]]
   from = "/*"
