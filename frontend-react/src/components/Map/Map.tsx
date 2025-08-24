@@ -39,6 +39,11 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
+    console.log('🗺️ Map: Initializing map component');
+    console.log('🗺️ Map: Leaflet version:', L.version);
+    console.log('🗺️ Map: MarkerClusterGroup available:', typeof (L as any).markerClusterGroup);
+    console.log('🗺️ Map: HeatLayer available:', typeof (L as any).heatLayer);
+
     // Khởi tạo bản đồ với proper options
     const map = L.map(mapRef.current, {
       preferCanvas: false,
@@ -73,9 +78,9 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
 
     // Thử add tile layer chính trước
     tileLayer.addTo(map);
-    
+
     // Event handler để fallback nếu tile không load được
-    tileLayer.on('tileerror', function(error) {
+    tileLayer.on('tileerror', function (error) {
       console.log('🗺️ Map: Tile error, trying fallback...', error);
       map.removeLayer(tileLayer);
       fallbackTileLayer.addTo(map);
@@ -255,9 +260,13 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
-    console.log('🗺️ Map: Updating markers with data:', data);
+    console.log('🗺️ Map: === UPDATING MARKERS ===');
+    console.log('🗺️ Map: Environment:', process.env.NODE_ENV);
+    console.log('🗺️ Map: Data received:', data);
     console.log('🗺️ Map: Data length:', data.length);
     console.log('🗺️ Map: First item:', data[0]);
+    console.log('🗺️ Map: MarkerClusterGroup ref:', markerClusterGroupRef.current);
+    console.log('🗺️ Map: Map instance:', mapInstanceRef.current);
 
     // Xóa markers cũ khỏi cluster group
     if (markerClusterGroupRef.current) {

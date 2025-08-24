@@ -22,9 +22,15 @@ export default defineConfig({
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          ui: ['leaflet', 'recharts', 'framer-motion'],
+          charts: ['recharts', 'framer-motion'],
+          // Tách leaflet và plugins thành chunk riêng để đảm bảo load order
+          leaflet: ['leaflet'],
         },
       },
+    },
+    // Đảm bảo không tree-shake Leaflet plugins
+    commonjsOptions: {
+      include: [/leaflet/, /node_modules/],
     },
   },
 })
