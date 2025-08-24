@@ -51,7 +51,7 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
     }).setView([21.0285, 105.8542], 10);
     mapInstanceRef.current = map;
 
-    // Thêm tile layer với multiple fallbacks và proper caching
+    // Thêm tile layer với multiple providers để tránh lỗi
     const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       subdomains: ['a', 'b', 'c'],
@@ -60,13 +60,26 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
       zoomOffset: 0,
       crossOrigin: true,
       noWrap: false,
-      tms: false,
-
-      errorTileUrl: '',
-      detectRetina: true
+      errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+      detectRetina: false
     });
 
+    // Fallback tile layer nếu OSM không hoạt động
+    const fallbackTileLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors © CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
+    });
+
+    // Thử add tile layer chính trước
     tileLayer.addTo(map);
+    
+    // Event handler để fallback nếu tile không load được
+    tileLayer.on('tileerror', function(error) {
+      console.log('🗺️ Map: Tile error, trying fallback...', error);
+      map.removeLayer(tileLayer);
+      fallbackTileLayer.addTo(map);
+    });
 
     // Force map to refresh tiles properly - multiple attempts
     setTimeout(() => {

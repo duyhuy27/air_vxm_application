@@ -183,7 +183,7 @@ body {
     transform: translateY(-1px);
 }
 
-/* LEAFLET MAP CONTAINER - COMPLETE FIX */
+/* LEAFLET MAP CONTAINER - PRODUCTION FIX */
 .map-container {
     flex: 1;
     position: relative;
@@ -191,8 +191,6 @@ body {
     width: 100% !important;
     height: calc(100vh - 60px) !important;
     overflow: hidden;
-    /* Debug: Add border to see if container is visible */
-    border: 2px solid red !important;
     min-height: 400px !important;
 }
 
@@ -201,25 +199,35 @@ body {
     height: 100% !important;
     position: relative;
     z-index: 1;
-    /* Debug: Add background to see if map div is visible */
-    background: rgba(0, 255, 0, 0.2) !important;
+    background: #f0f0f0 !important;
 }
 
-/* CRITICAL: Reset all Leaflet tile layer transforms */
+/* CRITICAL: Leaflet container styling */
 .leaflet-container {
     font-family: 'Inter', sans-serif !important;
     width: 100% !important;
     height: 100% !important;
-    background: white !important;
+    background: #f0f0f0 !important;
+    position: relative !important;
 }
 
-/* CRITICAL: Force Leaflet tiles to display */
+/* CRITICAL: Force Leaflet tiles to display properly */
 .leaflet-tile-pane {
     z-index: 200 !important;
+    opacity: 1 !important;
 }
 
 .leaflet-map-pane {
     z-index: 400 !important;
+}
+
+.leaflet-tile {
+    opacity: 1 !important;
+    transition: opacity 0.2s ease-in-out !important;
+}
+
+.leaflet-tile-container {
+    opacity: 1 !important;
 }
 
 .leaflet-control-container {
