@@ -1,14 +1,14 @@
 {
   "version": 2,
-  "framework": "create-react-app",
+  "framework": "vite",
   "buildCommand": "npm run build",
-  "outputDirectory": "build",
+  "outputDirectory": "dist",
   "installCommand": "npm ci --legacy-peer-deps",
   "nodejs": "18.x",
   "env": {
-    "REACT_APP_API_BASE_URL": "https://fastapi-bigquery-app-production.up.railway.app/api/v1",
-    "REACT_APP_VERSION": "1.0.0",
-    "REACT_APP_ENV": "production",
+    "VITE_API_BASE_URL": "https://fastapi-bigquery-app-production.up.railway.app/api/v1",
+    "VITE_APP_VERSION": "1.0.0",
+    "VITE_APP_ENV": "production",
     "CI": "false",
     "NODE_ENV": "production",
     "GENERATE_SOURCEMAP": "false"
