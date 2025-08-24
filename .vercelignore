@@ -1,37 +1,18 @@
-# Dependencies
-node_modules
-*/node_modules
+# Ignore Python files - we only want frontend deployment
+requirements.txt
+*.py
+app/
+scripts/
+credentials/
+__pycache__/
+*.pyc
+main.py
+Dockerfile
+docker-compose.yml
 
-# Build outputs (chỉ build frontend-react/dist)
+# Backend specific files
 backend.log
 *.log
-*.md
-credentials/
-scripts/
-__pycache__
-app/
-*.py
-requirements.txt
 
-# Frontend chỉ deploy dist
-frontend-react/node_modules
-frontend-react/src
-frontend-react/public
-frontend-react/build
-
-# Development files
-.env
-.env.local
-.env.development
-.env.test
-.env.production.local
-
-# IDE
-.vscode
-.idea
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
+# Keep only frontend
+!frontend-react/

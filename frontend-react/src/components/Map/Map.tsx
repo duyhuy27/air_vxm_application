@@ -58,7 +58,7 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
 
     // SỬ DỤNG TILE PROVIDER ỔN ĐỊNH NHẤT CHO PRODUCTION
     console.log('🗺️ Map: Setting up tile layer...');
-    
+
     // Dùng CartoDB (rất ổn định) làm primary thay vì OSM
     const primaryTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
       attribution: '© OpenStreetMap contributors © CARTO',
@@ -78,7 +78,7 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
     // Thử add tile layer chính trước  
     console.log('🗺️ Map: Adding primary tile layer (CARTO)...');
     primaryTileLayer.addTo(map);
-    
+
     // Event handler để fallback nếu tile không load được
     primaryTileLayer.on('tileerror', function (error) {
       console.log('🗺️ Map: Primary tile error, trying OSM fallback...', error);
@@ -86,11 +86,11 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
       fallbackTileLayer.addTo(map);
     });
 
-    primaryTileLayer.on('tileloadstart', function() {
+    primaryTileLayer.on('tileloadstart', function () {
       console.log('🗺️ Map: Tile loading started...');
     });
 
-    primaryTileLayer.on('tileload', function() {
+    primaryTileLayer.on('tileload', function () {
       console.log('🗺️ Map: Tile loaded successfully!');
     });
 
