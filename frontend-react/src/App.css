@@ -215,19 +215,30 @@ body {
 .leaflet-tile-pane {
     z-index: 200 !important;
     opacity: 1 !important;
+    transform: none !important;
 }
 
 .leaflet-map-pane {
     z-index: 400 !important;
+    transform: none !important;
 }
 
 .leaflet-tile {
     opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
     transition: opacity 0.2s ease-in-out !important;
 }
 
 .leaflet-tile-container {
     opacity: 1 !important;
+    visibility: visible !important;
+    display: block !important;
+}
+
+/* Force render tiles even if they appear broken */
+.leaflet-tile[src*="data:image"] {
+    display: none !important;
 }
 
 .leaflet-control-container {

@@ -56,34 +56,42 @@ const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
     }).setView([21.0285, 105.8542], 10);
     mapInstanceRef.current = map;
 
-    // Thêm tile layer với multiple providers để tránh lỗi
-    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // SỬ DỤNG TILE PROVIDER ỔN ĐỊNH NHẤT CHO PRODUCTION
+    console.log('🗺️ Map: Setting up tile layer...');
+    
+    // Dùng CartoDB (rất ổn định) làm primary thay vì OSM
+    const primaryTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors © CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19,
+      detectRetina: true
+    });
+
+    // OSM làm fallback
+    const fallbackTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       subdomains: ['a', 'b', 'c'],
       maxZoom: 18,
-      tileSize: 256,
-      zoomOffset: 0,
-      crossOrigin: true,
-      noWrap: false,
-      errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-      detectRetina: false
+      crossOrigin: true
     });
 
-    // Fallback tile layer nếu OSM không hoạt động
-    const fallbackTileLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors © CARTO',
-      subdomains: 'abcd',
-      maxZoom: 19
-    });
-
-    // Thử add tile layer chính trước
-    tileLayer.addTo(map);
-
+    // Thử add tile layer chính trước  
+    console.log('🗺️ Map: Adding primary tile layer (CARTO)...');
+    primaryTileLayer.addTo(map);
+    
     // Event handler để fallback nếu tile không load được
-    tileLayer.on('tileerror', function (error) {
-      console.log('🗺️ Map: Tile error, trying fallback...', error);
-      map.removeLayer(tileLayer);
+    primaryTileLayer.on('tileerror', function (error) {
+      console.log('🗺️ Map: Primary tile error, trying OSM fallback...', error);
+      map.removeLayer(primaryTileLayer);
       fallbackTileLayer.addTo(map);
+    });
+
+    primaryTileLayer.on('tileloadstart', function() {
+      console.log('🗺️ Map: Tile loading started...');
+    });
+
+    primaryTileLayer.on('tileload', function() {
+      console.log('🗺️ Map: Tile loaded successfully!');
     });
 
     // Force map to refresh tiles properly - multiple attempts
