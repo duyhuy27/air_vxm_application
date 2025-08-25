@@ -1,0 +1,642 @@
+
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet.heat';
+
+// Fix Leaflet default icon paths for production
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+import { RefreshCw } from 'lucide-react';
+import { AQIData } from '../../types/aqi';
+import { getAQIColor, getAQILabel, getAQILevelInfo, getDistrictName } from '../../utils/aqi';
+import '../../types/leaflet-heat.d.ts';
+
+
+
+interface MapProps {
+  data: AQIData[];
+  onLocationSelect: (location: AQIData) => void;
+  selectedLocation: AQIData | null;
+}
+
+const Map = ({ data, onLocationSelect, selectedLocation }: MapProps) => {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
+  const markerClusterGroupRef = useRef<any>(null);
+  const heatmapLayerRef = useRef<any>(null);
+  const markersLayerRef = useRef<L.LayerGroup | null>(null);
+  const layerControlRef = useRef<L.Control.Layers | null>(null);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    console.log('🗺️ Map: Initializing map component');
+    console.log('🗺️ Map: Leaflet version:', L.version);
+    console.log('🗺️ Map: MarkerClusterGroup available:', typeof (L as any).markerClusterGroup);
+    console.log('🗺️ Map: HeatLayer available:', typeof (L as any).heatLayer);
+
+    // Đợi DOM render xong
+    const initializeMap = () => {
+      if (!mapRef.current) {
+        console.error('🗺️ Map: Container element not found');
+        return;
+      }
+
+      // CRITICAL: Kiểm tra xem container đã có map chưa
+      if ((mapRef.current as any)._leaflet_id) {
+        console.log('🗺️ Map: Container already has a map, skipping initialization');
+        return;
+      }
+
+      // Debug map container
+      console.log('🗺️ Map: Container element:', mapRef.current);
+      const dimensions = {
+        width: mapRef.current.offsetWidth,
+        height: mapRef.current.offsetHeight,
+        clientWidth: mapRef.current.clientWidth,
+        clientHeight: mapRef.current.clientHeight,
+        computedStyle: window.getComputedStyle(mapRef.current)
+      };
+      console.log('🗺️ Map: Container dimensions:', dimensions);
+
+      // Kiểm tra nếu container có height = 0
+      if (dimensions.height === 0) {
+        console.error('🗺️ Map: Container height is 0! This will cause blank map');
+        console.log('🗺️ Map: Computed style height:', dimensions.computedStyle.height);
+        console.log('🗺️ Map: Computed style display:', dimensions.computedStyle.display);
+      }
+
+      // Khởi tạo bản đồ với proper options
+      const map = L.map(mapRef.current, {
+        preferCanvas: false,
+        fadeAnimation: false,
+        zoomAnimation: false,
+        markerZoomAnimation: false,
+        zoomControl: true,
+        attributionControl: true,
+        crs: L.CRS.EPSG3857
+      }).setView([21.0285, 105.8542], 10);
+      mapInstanceRef.current = map;
+
+      console.log('🗺️ Map: Map instance created:', map);
+      console.log('🗺️ Map: Map container size:', map.getSize());
+
+      // Force set container size if needed
+      if (map.getSize().x === 0 || map.getSize().y === 0) {
+        console.error('🗺️ Map: Map size is 0, forcing container size');
+        mapRef.current.style.width = '100%';
+        mapRef.current.style.height = '600px';
+        setTimeout(() => {
+          map.invalidateSize();
+          console.log('🗺️ Map: Forced size after manual resize');
+        }, 100);
+      }
+
+      // SỬ DỤNG TILE PROVIDER ỔN ĐỊNH NHẤT CHO PRODUCTION
+      console.log('🗺️ Map: Setting up tile layer...');
+
+      // SIMPLE OpenStreetMap tiles (should work in CRA)
+      console.log('🗺️ Map: Setting up OpenStreetMap tiles...');
+      const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+      });
+
+      console.log('🗺️ Map: Adding tile layer...');
+      tileLayer.addTo(map);
+
+      // Simple tile debugging
+      tileLayer.on('tileerror', function (error: any) {
+        console.error('🗺️ Map: Tile load error:', error);
+      });
+
+      tileLayer.on('tileload', function () {
+        console.log('🗺️ Map: ✅ Tile loaded successfully!');
+      });
+
+      // Debug tile layer sau khi add
+      setTimeout(() => {
+        console.log('🗺️ Map: Current zoom level:', map.getZoom());
+        console.log('🗺️ Map: Current center:', map.getCenter());
+        console.log('🗺️ Map: Map bounds:', map.getBounds());
+        console.log('🗺️ Map: Tile layer URLs being requested...');
+
+        // FORCE NUCLEAR OPTION: Complete map refresh
+        console.log('🗺️ Map: FORCING COMPLETE MAP REFRESH');
+        map.setZoom(map.getZoom());
+        map.panTo(map.getCenter());
+
+        // Force re-render all tiles
+        setTimeout(() => {
+          map.eachLayer((layer: any) => {
+            if (layer._url && layer._url.includes('openstreetmap')) {
+              console.log('🗺️ Map: Forcing tile layer redraw');
+              layer.redraw();
+            }
+          });
+
+          // Debug: Check if tiles are being requested
+          console.log('🗺️ Map: 🔍 CHECK NETWORK TAB FOR:');
+          console.log('Expected CartoDB tile requests: cartodb-basemaps-a.global.ssl.fastly.net/light_all/10/838/462.png');
+          console.log('If no tile requests = Leaflet not properly initialized!');
+
+        }, 500);
+      }, 1000);
+
+      tileLayer.on('tileloadstart', function () {
+        console.log('🗺️ Map: Tile loading started...');
+      });
+
+      tileLayer.on('tileload', function () {
+        console.log('🗺️ Map: Tile loaded successfully!');
+        // Force map refresh when tiles are loaded
+        setTimeout(() => {
+          map.invalidateSize();
+          console.log('🗺️ Map: Forced invalidateSize after tile load');
+        }, 50);
+      });
+
+      // Force map to refresh tiles properly - multiple attempts
+      setTimeout(() => {
+        map.invalidateSize();
+        console.log('🗺️ Map: First invalidateSize called');
+      }, 100);
+
+      setTimeout(() => {
+        map.invalidateSize();
+        // Force refresh tiles by removing and re-adding tile layer
+        if (tileLayer && map.hasLayer(tileLayer)) {
+          map.removeLayer(tileLayer);
+          map.addLayer(tileLayer);
+        }
+        console.log('🗺️ Map: Second invalidateSize and tile refresh called');
+      }, 500);
+
+      setTimeout(() => {
+        map.invalidateSize();
+        console.log('🗺️ Map: Final invalidateSize called');
+      }, 1000);
+
+      // Khởi tạo MarkerClusterGroup với cấu hình tùy chỉnh
+      const markerClusterGroup = (L as any).markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: 50,
+        iconCreateFunction: function (cluster: any) {
+          const childCount = cluster.getChildCount();
+          let className = 'marker-cluster-small';
+
+          if (childCount < 10) {
+            className = 'marker-cluster-small';
+          } else if (childCount < 20) {
+            className = 'marker-cluster-medium';
+          } else {
+            className = 'marker-cluster-large';
+          }
+
+          return new L.DivIcon({
+            html: '<div><span>' + childCount + '</span></div>',
+            className: 'marker-cluster ' + className,
+            iconSize: new L.Point(40, 40)
+          });
+        }
+      });
+
+      markerClusterGroupRef.current = markerClusterGroup;
+
+      // Tạo layer group cho markers
+      const markersLayer = L.layerGroup();
+      markersLayerRef.current = markersLayer;
+      markersLayer.addLayer(markerClusterGroup);
+      map.addLayer(markersLayer);
+
+      // Tạo layer control
+      const baseMaps = {};
+      const overlayMaps = {
+        "📍 Điểm Quan Trắc": markersLayer
+      };
+
+      const layerControl = L.control.layers(baseMaps, overlayMaps, {
+        position: 'topright',
+        collapsed: true
+      });
+      layerControlRef.current = layerControl;
+      layerControl.addTo(map);
+
+      // Thêm click event để back về map ban đầu
+      map.on('click', () => {
+        console.log('🗺️ Map clicked - Back to main map view');
+        // Có thể thêm logic để reset view hoặc focus vào map
+      });
+
+      // Thêm AQI Legend hoàn chỉnh từ frontend cũ
+      const legend = (L as any).control({ position: 'bottomleft' });
+      legend.onAdd = () => {
+        const div = (L as any).DomUtil.create('div', 'aqi-legend');
+        div.innerHTML = `
+        <h3><i class="fas fa-palette"></i> Chỉ số AQI</h3>
+        <div class="legend-items">
+          <div class="legend-item" data-level="good">
+            <span class="legend-emoji">😊</span>
+            <div class="legend-color good"></div>
+            <span>Tốt (0-50 AQI)</span>
+          </div>
+          <div class="legend-item" data-level="moderate">
+            <span class="legend-emoji">🙂</span>
+            <div class="legend-color moderate"></div>
+            <span>Trung bình (51-100 AQI)</span>
+            
+          </div>
+          <div class="legend-item" data-level="unhealthy-sensitive">
+            <span class="legend-emoji">😐</span>
+            <div class="legend-color unhealthy-sensitive"></div>
+            <span>Kém (101-150 AQI)</span>
+          </div>
+          <div class="legend-item" data-level="unhealthy">
+            <span class="legend-emoji">😟</span>
+            <div class="legend-color unhealthy"></div>
+            <span>Xấu (151-200 AQI)</span>
+          </div>
+          <div class="legend-item" data-level="very-unhealthy">
+            <span class="legend-emoji">😩</span>
+            <div class="legend-color very-unhealthy"></div>
+            <span>Rất xấu (201-300 AQI)</span>
+          </div>
+          <div class="legend-item" data-level="hazardous">
+            <span class="legend-emoji">😷</span>
+            <div class="legend-color hazardous"></div>
+            <span>Nguy hại (>300 AQI)</span>
+          </div>
+        </div>
+      `;
+        return div;
+      };
+      legend.addTo(map);
+
+    };
+
+    setTimeout(() => {
+      initializeMap();
+    }, 100);
+
+    // Cleanup function
+    return () => {
+      console.log('🗺️ Map: Cleaning up map component');
+
+      if (layerControlRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeControl(layerControlRef.current);
+        layerControlRef.current = null;
+      }
+      if (heatmapLayerRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
+        heatmapLayerRef.current = null;
+      }
+      if (markersLayerRef.current && mapInstanceRef.current) {
+        mapInstanceRef.current.removeLayer(markersLayerRef.current);
+        markersLayerRef.current = null;
+      }
+      if (markerClusterGroupRef.current) {
+        markerClusterGroupRef.current.clearLayers();
+        markerClusterGroupRef.current = null;
+      }
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+
+      // CRITICAL: Clear leaflet container reference
+      if (mapRef.current) {
+        delete (mapRef.current as any)._leaflet_id;
+        console.log('🗺️ Map: Cleared container leaflet ID');
+      }
+    };
+  }, []);
+
+  // Tạo heatmap layer từ dữ liệu AQI
+  const createHeatmapLayer = (data: AQIData[]) => {
+    const heatmapData: [number, number, number][] = data.map(location => {
+      const aqi = location.AQI_TOTAL || location.aqi || 0;
+      // Normalize AQI value cho heatmap (0-1)
+      const intensity = Math.min(aqi / 300, 1); // Max AQI ~300
+      return [location.latitude, location.longitude, intensity];
+    });
+
+    // Tạo custom gradient theo màu AQI
+    const gradient = {
+      0.0: '#00FF00', // Tốt (Xanh lá)
+      0.17: '#FFFF00', // Trung bình (Vàng) 
+      0.33: '#FF8C00', // Kém (Cam)
+      0.5: '#FF0000',  // Xấu (Đỏ)
+      0.67: '#8B008B', // Rất xấu (Tím)
+      1.0: '#800000'   // Nguy hại (Đỏ đậm)
+    };
+
+    const heatLayer = (L as any).heatLayer(heatmapData, {
+      radius: 25,
+      blur: 20,
+      maxZoom: 17,
+      max: 1.0,
+      minOpacity: 0.3,
+      gradient: gradient
+    });
+
+    return heatLayer;
+  };
+
+  // Cập nhật markers và heatmap khi data thay đổi
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    console.log('🗺️ Map: === UPDATING MARKERS ===');
+    console.log('🗺️ Map: Environment:', process.env.NODE_ENV);
+    console.log('🗺️ Map: Data received:', data);
+    console.log('🗺️ Map: Data length:', data.length);
+    console.log('🗺️ Map: First item:', data[0]);
+    console.log('🗺️ Map: MarkerClusterGroup ref:', markerClusterGroupRef.current);
+    console.log('🗺️ Map: Map instance:', mapInstanceRef.current);
+
+    // Xóa markers cũ khỏi cluster group
+    if (markerClusterGroupRef.current) {
+      markerClusterGroupRef.current.clearLayers();
+    }
+    markersRef.current = [];
+
+    // Xóa heatmap cũ
+    if (heatmapLayerRef.current && layerControlRef.current) {
+      layerControlRef.current.removeLayer(heatmapLayerRef.current);
+      if (mapInstanceRef.current.hasLayer(heatmapLayerRef.current)) {
+        mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
+      }
+      heatmapLayerRef.current = null;
+    }
+
+    // Tạo markers mới
+    data.forEach((location, index) => {
+      console.log(`🗺️ Map: Processing location ${index}:`, location);
+      console.log(`🗺️ Map: AQI_TOTAL: ${location.AQI_TOTAL}, aqi: ${location.aqi}`);
+
+      const aqi = location.AQI_TOTAL || location.aqi || 0;
+      const color = getAQIColor(aqi);
+      const label = getAQILabel(aqi);
+      const levelInfo = getAQILevelInfo(aqi);
+
+      console.log(`🗺️ Map: Location ${index} - AQI: ${aqi}, Color: ${color}, Label: ${label}`);
+
+      // Tạo custom icon cờ cắm theo màu AQI với anchor points chính xác
+      const icon = L.divIcon({
+        className: 'aqi-flag-marker',
+        html: `
+          <div class="flag-container" style="--flag-color: ${color};">
+            <div class="flag-pole"></div>
+            <div class="flag-body">
+              <div class="flag-content">
+                <div class="flag-aqi">${Math.round(aqi)}</div>
+                <div class="flag-label">${label}</div>
+              </div>
+              <div class="flag-triangle"></div>
+            </div>
+            <div class="flag-shadow"></div>
+          </div>
+        `,
+        iconSize: [60, 70],
+        iconAnchor: [30, 65], // Đặt anchor point ở giữa bottom của flag
+        popupAnchor: [0, -65]  // Tooltip sẽ xuất hiện ngay phía trên flag
+      });
+
+      // Tạo marker với tooltip và thêm vào cluster group
+      const marker = L.marker([location.latitude, location.longitude], { icon });
+
+      console.log(`🗺️ Map: Created marker for location ${index} at [${location.latitude}, ${location.longitude}]`);
+
+      // Tạo tooltip content với design hiện đại
+      const tooltipContent = `
+        <div class="aqi-tooltip">
+          <div class="tooltip-header">
+            <h3 class="tooltip-title">${getDistrictName(location)}</h3>
+            <div class="tooltip-aqi">
+              <span class="aqi-value" style="color: ${color};">${Math.round(aqi)}</span>
+              <span class="aqi-status" style="color: ${color};">${label}</span>
+            </div>
+          </div>
+          
+          <div class="tooltip-metrics">
+            <div class="metric-grid">
+              <div class="metric-item">
+                <div class="metric-left">
+                  <span class="metric-icon">🌫️</span>
+                  <span class="metric-label">PM2.5</span>
+                </div>
+                <span class="metric-value">${location.pm2_5?.toFixed(1) || 'N/A'} µg/m³</span>
+              </div>
+              <div class="metric-item">
+                <div class="metric-left">
+                  <span class="metric-icon">💨</span>
+                  <span class="metric-label">PM10</span>
+                </div>
+                <span class="metric-value">${location.pm10?.toFixed(1) || 'N/A'} µg/m³</span>
+              </div>
+              <div class="metric-item">
+                <div class="metric-left">
+                  <span class="metric-icon">🌡️</span>
+                  <span class="metric-label">Nhiệt độ</span>
+                </div>
+                <span class="metric-value">${location.temperature_2m?.toFixed(1) || 'N/A'}°C</span>
+              </div>
+              <div class="metric-item">
+                <div class="metric-left">
+                  <span class="metric-icon">💧</span>
+                  <span class="metric-label">Độ ẩm</span>
+                </div>
+                <span class="metric-value">${location.relative_humidity_2m?.toFixed(1) || 'N/A'}%</span>
+              </div>
+              <div class="metric-item">
+                <div class="metric-left">
+                  <span class="metric-icon">🌪️</span>
+                  <span class="metric-label">Gió</span>
+                </div>
+                <span class="metric-value">${location.wind_speed_10m?.toFixed(1) || 'N/A'} m/s</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="tooltip-advice">
+            <span class="advice-icon">💡</span>
+            <span class="advice-text">${levelInfo.healthAdvice}</span>
+          </div>
+          
+          <button 
+            class="tooltip-button"
+            onclick="window.openForecastDetail('${location.latitude}_${location.longitude}')"
+          >
+            📊 Xem dự báo chi tiết
+          </button>
+        </div>
+      `;
+
+      // Bind tooltip với cấu hình positioning chính xác
+      marker.bindTooltip(tooltipContent, {
+        permanent: false,
+        direction: 'top', // Luôn hiển thị phía trên marker
+        offset: [0, 0], // Không offset thêm, dùng popupAnchor từ icon
+        className: 'custom-tooltip',
+        opacity: 1,
+        sticky: false, // Không sticky để tránh jumping
+        interactive: true
+      });
+
+      // Xử lý click marker
+      marker.on('click', () => {
+        console.log('🗺️ Map: Marker clicked for location:', location);
+        onLocationSelect(location);
+      });
+
+      // Thêm marker vào cluster group thay vì trực tiếp vào map
+      if (markerClusterGroupRef.current) {
+        markerClusterGroupRef.current.addLayer(marker);
+      }
+
+      markersRef.current.push(marker);
+    });
+
+    console.log(`🗺️ Map: Created ${markersRef.current.length} markers`);
+
+    // Tạo heatmap layer mới
+    if (data.length > 0) {
+      const heatmap = createHeatmapLayer(data);
+      heatmapLayerRef.current = heatmap;
+
+      // Thêm heatmap vào layer control
+      if (layerControlRef.current) {
+        layerControlRef.current.addOverlay(heatmap, "🌡️ Bản Đồ Nhiệt");
+        console.log('🗺️ Map: Added heatmap layer to control');
+      }
+    }
+
+    // Fit bounds nếu có data
+    if (data.length > 0 && markerClusterGroupRef.current) {
+      // Sử dụng cluster group để fit bounds
+      const group = markerClusterGroupRef.current;
+      if (group.getLayers().length > 0) {
+        mapInstanceRef.current.fitBounds(group.getBounds(), { padding: [20, 20] });
+        console.log('🗺️ Map: Fitted bounds to cluster data');
+      }
+    }
+  }, [data, onLocationSelect]);
+
+  // Highlight selected location
+  useEffect(() => {
+    if (!mapInstanceRef.current || !selectedLocation) return;
+
+    // Xóa highlight cũ
+    markersRef.current.forEach(marker => {
+      const icon = marker.getIcon() as L.DivIcon;
+      const html = icon.options.html;
+      if (typeof html === 'string' && html.includes('class="flag-container active"')) {
+        const newIcon = L.divIcon({
+          ...icon.options,
+          html: html.replace('class="flag-container active"', 'class="flag-container"')
+        });
+        marker.setIcon(newIcon);
+      }
+    });
+
+    // Highlight location được chọn
+    const selectedMarker = markersRef.current.find(marker => {
+      const pos = marker.getLatLng();
+      return Math.abs(pos.lat - selectedLocation.latitude) < 0.001 &&
+        Math.abs(pos.lng - selectedLocation.longitude) < 0.001;
+    });
+
+    if (selectedMarker) {
+      const icon = selectedMarker.getIcon() as L.DivIcon;
+      const html = icon.options.html;
+      if (typeof html === 'string') {
+        const newIcon = L.divIcon({
+          ...icon.options,
+          html: html.replace('class="flag-container"', 'class="flag-container active"')
+        });
+        selectedMarker.setIcon(newIcon);
+      }
+
+      // Pan to selected location
+      mapInstanceRef.current.panTo([selectedLocation.latitude, selectedLocation.longitude]);
+    }
+  }, [selectedLocation]);
+
+  // Thêm global functions để xử lý click từ tooltip
+  useEffect(() => {
+    (window as any).selectLocation = (locationId: string) => {
+      console.log('🗺️ Map: Global selectLocation called with:', locationId);
+      const [lat, lng] = locationId.split('_');
+      const location = data.find(loc =>
+        loc.latitude.toFixed(3) === lat &&
+        loc.longitude.toFixed(3) === lng
+      );
+      if (location) {
+        console.log('🗺️ Map: Found location for popup click:', location);
+        onLocationSelect(location);
+      } else {
+        console.log('🗺️ Map: Location not found for popup click');
+      }
+    };
+
+    (window as any).openForecastDetail = (locationId: string) => {
+      console.log('🗺️ Map: Opening forecast detail for:', locationId);
+      const [lat, lng] = locationId.split('_');
+      const location = data.find(loc =>
+        Math.abs(loc.latitude - parseFloat(lat)) < 0.001 &&
+        Math.abs(loc.longitude - parseFloat(lng)) < 0.001
+      );
+
+      if (location) {
+        console.log('🗺️ Map: Found location for forecast:', location);
+        // Trigger the location selection first
+        onLocationSelect(location);
+
+        // Then trigger the forecast page navigation
+        // This will be handled by the parent App component
+        const event = new CustomEvent('openForecast', {
+          detail: { location }
+        });
+        window.dispatchEvent(event);
+      } else {
+        console.log('🗺️ Map: Location not found for forecast');
+      }
+    };
+
+    return () => {
+      delete (window as any).selectLocation;
+      delete (window as any).openForecastDetail;
+    };
+  }, [data, onLocationSelect]);
+
+  return (
+    <div className="map-container">
+      <div id="map" ref={mapRef}></div>
+
+      <div className="map-controls">
+        <button
+          className="btn-refresh"
+          onClick={() => window.location.reload()}
+          title="Làm mới bản đồ"
+        >
+          <RefreshCw size={16} />
+          Làm mới
+        </button>
+      </div>
+
+    </div>
+  );
+};
+
+export default Map;

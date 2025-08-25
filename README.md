@@ -1,205 +1,176 @@
-# FastAPI BigQuery Application
+# AirVXM Platform - Frontend New
 
-Ứng dụng FastAPI tích hợp với Google BigQuery, hỗ trợ frontend và deployment tự động.
+## Tổng quan
 
-## 🏗️ Kiến trúc
+Đây là phiên bản mới hoàn toàn của AirVXM Platform Frontend, được xây dựng từ đầu với React + Vite + TypeScript để giải quyết vấn đề "màn hình trắng" khi sử dụng Leaflet maps và đảm bảo tính ổn định cao.
 
-- **Backend**: FastAPI với BigQuery integration
-- **Frontend**: HTML/CSS/JavaScript đơn giản
-- **Database**: Google BigQuery
-- **Deployment**: Railway (production), Vercel (frontend)
+## Công nghệ sử dụng
 
-## 📋 Yêu cầu
+- **React 19.1.1** - Framework UI
+- **Vite 7.1.3** - Build tool
+- **TypeScript** - Type safety
+- **Leaflet** - Thư viện bản đồ
+- **React Query** - State management
+- **React Router Dom** - Routing
+- **Lucide React** - Icons
+- **Framer Motion** - Animations
+- **Recharts** - Charts
 
-- Python 3.11+
-- Google Cloud Project với BigQuery API enabled
-- Railway account (cho backend)
-- Vercel account (cho frontend)
+## Tính năng chính
 
-## 🚀 Cài đặt và Chạy Local
+### ✅ Hoàn thành
+- 🗺️ **Bản đồ tương tác** với Leaflet
+- 🎨 **Custom markers** hiển thị AQI
+- 🌡️ **Heatmap layer** cho visualization
+- 📊 **Sidebar** với thống kê và ranking
+- 📈 **Trang dự báo** với bảng dữ liệu
+- 🤖 **Chatbot AI** với giao diện hiện đại
+- 📱 **Responsive design**
+- 🎯 **TypeScript** đầy đủ
 
-### 1. Clone và cài đặt dependencies
+### 🔧 Khắc phục vấn đề
+- ✅ **Màn hình trắng** khi hiển thị bản đồ
+- ✅ **Vite compatibility** với Leaflet
+- ✅ **Build tối ưu** cho production
+- ✅ **Code splitting** thông minh
 
-```bash
-git clone <repository-url>
-cd air_vxm_application
-pip install -r requirements.txt
-```
+## Cài đặt và chạy
 
-### 2. Cấu hình Google Cloud
-
-- Đặt file service account JSON vào `credentials/`
-- File mẫu: `credentials/your-project-credentials.json`
-
-### 3. Cấu hình Environment
-
-```bash
-cp env.example .env
-# Chỉnh sửa .env với thông tin project của bạn
-```
-
-### 4. Chạy application
+### Development
 
 ```bash
-# Chạy backend
-uvicorn main:app --reload
+# Clone và vào thư mục
+cd airvxm-frontend-new
 
-# Hoặc sử dụng script
-python main.py
+# Cài đặt dependencies
+npm install
+
+# Chạy development server
+npm run dev
 ```
 
-## 🌐 Deployment
+Ứng dụng sẽ chạy tại `http://localhost:3000`
 
-### Railway (Backend)
-
-#### Option 1: Environment Variables (Recommended - Secure)
+### Production Build
 
 ```bash
-# 1. Generate credentials base64
-python3 scripts/setup_credentials.py
+# Build for production
+npm run build
 
-# 2. Deploy với environment variables
-./scripts/deploy-railway-with-env.sh
+# Preview production build
+npm run preview
 ```
 
-**Railway Environment Variables cần thiết:**
-- `GOOGLE_APPLICATION_CREDENTIALS_BASE64`: Base64 encoded credentials JSON
-- `GOOGLE_CLOUD_PROJECT`: Your GCP project ID
-- `BIGQUERY_DATASET`: Your BigQuery dataset name
-- `ENVIRONMENT`: production
-- `DEBUG`: false
+## Cấu trúc thư mục
 
-#### Option 2: Traditional deployment
+```
+src/
+├── components/
+│   ├── Map/           # Component bản đồ
+│   ├── Header/        # Header navigation
+│   ├── Sidebar/       # Sidebar thống kê
+│   ├── Forecast/      # Trang dự báo
+│   ├── Chatbot/       # Trang chatbot
+│   └── common/        # Components dùng chung
+├── services/          # API services
+├── types/             # TypeScript definitions
+├── utils/             # Utility functions
+└── App.tsx           # Main app component
+```
+
+## Triển khai
+
+### Vercel (Khuyến nghị)
+
+1. Connect repository với Vercel
+2. Build command: `npm run build`
+3. Output directory: `dist`
+4. Environment variables:
+   - `VITE_API_BASE_URL`: API endpoint
+
+### Các nền tảng khác
+
+- **Netlify**: Cấu hình tương tự Vercel
+- **Firebase Hosting**: Support native
+- **AWS S3 + CloudFront**: Cần cấu hình SPA routing
+
+## Environment Variables
+
+Tạo file `.env` trong root:
 
 ```bash
-./scripts/deploy-railway.sh
+# API Configuration
+VITE_API_BASE_URL=https://fastapi-bigquery-app-production.up.railway.app/api/v1
+
+# App Configuration
+VITE_APP_NAME=AirVXM Platform
+VITE_APP_DESCRIPTION=Giám sát chất lượng không khí Hà Nội
 ```
 
-### Vercel (Frontend)
+## Vite Configuration
 
-```bash
-./scripts/deploy-vercel.sh
+File `vite.config.ts` đã được tối ưu cho:
+- ⚡ **Build performance**
+- 📦 **Code splitting**
+- 🗺️ **Leaflet compatibility**
+- 🎯 **Production optimization**
+
+## API Integration
+
+Ứng dụng kết nối với BigQuery API để lấy:
+- 🌡️ Dữ liệu AQI realtime
+- 📊 Thống kê chất lượng không khí
+- 📈 Dự báo xu hướng
+- 🤖 Chatbot responses
+
+## Performance
+
+### Bundle Size Analysis
+```
+├── leaflet.js     ~149KB (thư viện bản đồ)
+├── index.js       ~312KB (main app)
+├── router.js      ~31KB  (routing)
+├── vendor.js      ~11KB  (utilities)
 ```
 
-## 🔧 API Endpoints
+### Optimizations
+- ⚡ **Lazy loading** cho routes
+- 📦 **Code splitting** theo tính năng
+- 🗺️ **Map tiles caching**
+- 🎨 **CSS optimization**
 
-### Health Check
-```
-GET /api/v1/health
-```
+## Browser Support
 
-### AQI Data
-```
-GET /api/v1/aqi/current
-GET /api/v1/aqi/history?days=7
-```
+- ✅ Chrome 80+
+- ✅ Firefox 74+
+- ✅ Safari 13+
+- ✅ Edge 80+
 
-## 📁 Cấu trúc Project
+## Troubleshooting
 
-```
-air_vxm_application/
-├── app/
-│   ├── api/
-│   │   ├── endpoints/
-│   │   │   ├── aqi.py          # AQI data endpoints
-│   │   │   └── health.py       # Health check
-│   │   └── router.py           # API router
-│   ├── core/
-│   │   └── config.py          # Configuration
-│   └── db/
-│       └── bigquery.py        # BigQuery client
-├── frontend/
-│   ├── index.html
-│   ├── script.js
-│   └── style.css
-├── scripts/
-│   ├── setup_credentials.py    # Convert credentials to base64
-│   ├── deploy-railway-with-env.sh  # Deploy với env vars
-│   ├── deploy-railway.sh       # Traditional deploy
-│   └── deploy-vercel.sh        # Deploy frontend
-├── credentials/                # Service account JSON files
-├── main.py                     # Application entry point
-├── requirements.txt
-└── README.md
-```
+### Map không hiển thị
+- Kiểm tra console errors
+- Verify Leaflet CSS imports
+- Check network connectivity
 
-## 🔐 Security Best Practices
+### Build errors
+- Xóa `node_modules` và reinstall
+- Clear Vite cache: `npx vite --force`
+- Check TypeScript configuration
 
-### Local Development
-- File credentials trong `credentials/` folder
-- Không commit credentials vào Git
-
-### Production (Railway)
-- Sử dụng Environment Variables
-- Credentials được encode base64
-- Không expose sensitive files
-
-## 🧪 Testing
-
-```bash
-# Test local
-python scripts/test_aqi.py
-
-# Test deployment
-python scripts/test-deployment.sh
-```
-
-## 🔍 Troubleshooting
-
-### BigQuery Connection Issues
-
-1. **Kiểm tra credentials**: 
-   - Local: File có tồn tại trong `credentials/`?
-   - Railway: Environment variable `GOOGLE_APPLICATION_CREDENTIALS_BASE64` đã set?
-
-2. **Kiểm tra permissions**: Service account có quyền truy cập BigQuery?
-
-3. **Kiểm tra project/dataset**: Tên project và dataset có đúng không?
-
-### Health Check
-
-```bash
-curl https://your-app.railway.app/api/v1/health
-```
-
-Response mẫu:
-```json
-{
-  "status": "healthy",
-  "timestamp": "2024-01-20T10:30:00Z",
-  "bigquery": {
-    "bigquery": "healthy",
-    "project": "your-project-id",
-    "dataset": "your-dataset",
-    "credentials_source": "environment"
-  }
-}
-```
-
-## 📈 Monitoring
-
-- Railway Dashboard: Xem logs và metrics
-- Health endpoint: Monitor application status
-- BigQuery Console: Monitor query usage
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork repository
-2. Tạo feature branch
+2. Create feature branch
 3. Commit changes
-4. Push và tạo Pull Request
+4. Create Pull Request
 
-## 📄 License
+## Support
 
-MIT License - xem file LICENSE để biết chi tiết.
+Báo cáo bug hoặc yêu cầu tính năng mới qua GitHub Issues.
 
 ---
 
-### 🔄 Recent Updates
-
-- ✅ Support Environment Variables cho Railway deployment
-- ✅ Security improvements với base64 credentials
-- ✅ Automatic fallback: env vars → file credentials
-- ✅ Enhanced health check với credentials source info
-- ✅ Improved deployment scripts với better UX # Force redeploy Sun Aug 24 02:01:04 +07 2025
-# Build trigger: Sun Aug 24 02:57:52 +07 2025
+**Phiên bản:** 1.0.0  
+**Cập nhật:** ${new Date().toLocaleDateString('vi-VN')}  
+**Tác giả:** Senior ReactJS Developer
