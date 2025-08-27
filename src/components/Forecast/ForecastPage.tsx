@@ -273,7 +273,6 @@ const ForecastPage = ({ selectedLocation, onBack }: ForecastPageProps): React.JS
                         {selectedLocation && (
                             <AQIHistoryChart
                                 locationName={selectedLocation.location_name || selectedLocation.district || 'Khu vực được chọn'}
-                                selectedLocation={selectedLocation}
                             />
                         )}
 

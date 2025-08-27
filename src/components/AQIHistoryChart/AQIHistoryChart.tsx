@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-    LineChart,
-    Line,
     AreaChart,
     Area,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
-    ResponsiveContainer,
-    Legend
+    ResponsiveContainer
 } from 'recharts';
 import { historyAPI } from '../../services/api';
 import { getAQIColor, getAQILabel } from '../../utils/aqi';
@@ -17,7 +14,6 @@ import './AQIHistoryChart.css';
 
 interface AQIHistoryChartProps {
     locationName: string;
-    selectedLocation: any;
 }
 
 type TimeFilter = '7days' | '24hours';
@@ -29,7 +25,7 @@ interface ChartDataPoint {
     aqiLevel: string;
 }
 
-const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName, selectedLocation }) => {
+const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
     const [timeFilter, setTimeFilter] = useState<TimeFilter>('7days');
     const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
     const [loading, setLoading] = useState(false);
@@ -108,7 +104,7 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName, selecte
     };
 
     // Custom tooltip component
-    const CustomTooltip = ({ active, payload, label }: any) => {
+    const CustomTooltip = ({ active, payload }: any) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             const aqi = data.aqi;
@@ -140,7 +136,6 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName, selecte
         if (!chartData.length) return [];
 
         const maxAqi = Math.max(...chartData.map(d => d.aqi));
-        const minAqi = Math.min(...chartData.map(d => d.aqi));
 
         // Create gradient based on AQI levels
         if (maxAqi <= 50) {

@@ -170,6 +170,14 @@ export const historyAPI = {
             params: { location_name: locationName }
         });
         return response.data;
+    },
+
+    // Lấy phân tích chuyên sâu 7 ngày
+    getInsights: async (locationName: string): Promise<any> => {
+        const response = await apiClient.get('/history/insights', {
+            params: { location_name: locationName }
+        });
+        return response.data;
     }
 };
 

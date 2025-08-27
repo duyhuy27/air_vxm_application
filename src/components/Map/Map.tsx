@@ -258,7 +258,7 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             // Convert dữ liệu về định dạng GeoJSON features
             const geoJsonFeatures = {
                 type: "FeatureCollection",
-                features: hanoiGeoData.level2s.map(district => {
+                features: hanoiGeoData.level2s.map((district: any) => {
                     const districtAQI = calculateDistrictAQI(district.coordinates, data);
 
                     // Fix coordinates structure: Remove extra nesting level
