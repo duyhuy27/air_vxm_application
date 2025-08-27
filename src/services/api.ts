@@ -16,7 +16,7 @@ const API_BASE_URL = 'https://fastapi-bigquery-app-production.up.railway.app/api
 // Create axios instance
 const apiClient = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 10000,
+    timeout: 30000, // Increased to 30 seconds for BigQuery queries
     headers: {
         'Content-Type': 'application/json',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
