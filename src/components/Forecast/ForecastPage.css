@@ -384,10 +384,7 @@
     font-weight: 500;
 }
 
-.weather-icon {
-    font-size: 32px;
-    margin: 16px 0;
-}
+/* Weather icon styles removed - no longer needed */
 
 .forecast-aqi {
     margin-bottom: 16px;

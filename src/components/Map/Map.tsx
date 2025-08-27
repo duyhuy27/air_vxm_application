@@ -3,8 +3,11 @@ import L from 'leaflet';
 import 'leaflet.markercluster';
 import 'leaflet.heat';
 import { RefreshCw } from 'lucide-react';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { point, polygon } from '@turf/helpers';
 import type { AQIData } from '../../types/aqi';
 import { getAQIColor, getAQILabel, getAQILevelInfo, getDistrictName } from '../../utils/aqi';
+import hanoiGeoData from '../../assets/01.json';
 
 // Fix for default marker icons in Vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -36,11 +39,13 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
     const heatmapLayerRef = useRef<any>(null);
     const markersLayerRef = useRef<any>(null);
     const layerControlRef = useRef<any>(null);
+    const districtLayerRef = useRef<any>(null);
 
     // State cho layer menu
     const [layerMenuOpen, setLayerMenuOpen] = useState(false);
     const [showMarkers, setShowMarkers] = useState(true);
     const [showHeatmap, setShowHeatmap] = useState(false);
+    const [showDistricts, setShowDistricts] = useState(true);
 
     useEffect(() => {
         if (!mapRef.current || mapInstanceRef.current) return;
@@ -54,12 +59,19 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Khởi tạo MarkerClusterGroup với cấu hình tùy chỉnh
+        // Tạo pane riêng cho tooltip để tối ưu z-index và hiệu năng
+        map.createPane('tooltipPane');
+        map.getPane('tooltipPane')!.style.zIndex = '1100';
+        map.getPane('tooltipPane')!.style.pointerEvents = 'auto';
+
+        // Khởi tạo MarkerClusterGroup với cấu hình tùy chỉnh và tối ưu tooltip
         const markerClusterGroup = (L as any).markerClusterGroup({
             spiderfyOnMaxZoom: true,
-            showCoverageOnHover: false,
+            showCoverageOnHover: false,  // Tránh xung đột với tooltip của marker
             zoomToBoundsOnClick: true,
             maxClusterRadius: 50,
+            animate: true,              // Smooth animation khi cluster/uncluster
+            animateAddingMarkers: false, // Tắt animation khi thêm marker để tooltip ổn định hơn
             iconCreateFunction: function (cluster: any) {
                 const childCount = cluster.getChildCount();
                 let className = 'marker-cluster-small';
@@ -144,6 +156,10 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                 mapInstanceRef.current.removeLayer(heatmapLayerRef.current);
                 heatmapLayerRef.current = null;
             }
+            if (districtLayerRef.current && mapInstanceRef.current) {
+                mapInstanceRef.current.removeLayer(districtLayerRef.current);
+                districtLayerRef.current = null;
+            }
             if (markersLayerRef.current && mapInstanceRef.current) {
                 mapInstanceRef.current.removeLayer(markersLayerRef.current);
                 markersLayerRef.current = null;
@@ -158,6 +174,212 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             }
         };
     }, []);
+
+    // Tính AQI trung bình cho một district dựa trên các marker trong vùng
+    const calculateDistrictAQI = (districtCoords: number[][][][], data: AQIData[]) => {
+        try {
+            // Fix coordinates structure và convert thành polygon turf
+            let polygonCoords: number[][][];
+            if (Array.isArray(districtCoords) &&
+                Array.isArray(districtCoords[0]) &&
+                Array.isArray(districtCoords[0][0]) &&
+                Array.isArray(districtCoords[0][0][0])) {
+                // Cấu trúc: [[[[[lon, lat]]]]] -> cần [[[lon, lat]]]
+                polygonCoords = districtCoords[0] as unknown as number[][][];
+            } else {
+                polygonCoords = districtCoords as unknown as number[][][];
+            }
+
+            const districtPolygon = polygon(polygonCoords);
+
+            // Tìm tất cả marker nằm trong polygon này
+            const markersInDistrict = data.filter(location => {
+                const locationPoint = point([location.longitude, location.latitude]);
+                return booleanPointInPolygon(locationPoint, districtPolygon);
+            });
+
+            if (markersInDistrict.length === 0) {
+                return 50; // Default AQI nếu không có marker nào
+            }
+
+            // Tính AQI trung bình
+            const totalAQI = markersInDistrict.reduce((sum, location) => {
+                return sum + (location.AQI_TOTAL || location.aqi || 50);
+            }, 0);
+
+            return Math.round(totalAQI / markersInDistrict.length);
+        } catch (error) {
+            console.warn('Error calculating district AQI:', error);
+            return 50; // Fallback AQI
+        }
+    };
+
+    // Tạo màu cho district dựa trên AQI với dải màu chuyên nghiệp
+    const getDistrictColor = (aqi: number) => {
+        // Định nghĩa dải màu nhạt theo từng mức AQI
+        if (aqi <= 50) {
+            return 'rgba(34, 139, 34, 0.6)';      // Xanh lá nhạt - Good
+        } else if (aqi <= 100) {
+            return 'rgba(255, 215, 0, 0.6)';      // Vàng nhạt - Moderate  
+        } else if (aqi <= 150) {
+            return 'rgba(255, 140, 0, 0.6)';      // Cam nhạt - Unhealthy for Sensitive
+        } else if (aqi <= 200) {
+            return 'rgba(255, 69, 0, 0.6)';       // Đỏ cam - Unhealthy
+        } else if (aqi <= 300) {
+            return 'rgba(128, 0, 128, 0.6)';      // Tím nhạt - Very Unhealthy
+        } else {
+            return 'rgba(128, 0, 0, 0.6)';        // Đỏ đậm - Hazardous
+        }
+    };
+
+    // Tạo màu border cho district (màu đậm hơn để nổi bật)
+    const getDistrictBorderColor = (aqi: number) => {
+        if (aqi <= 50) {
+            return '#228B22';      // Xanh lá đậm
+        } else if (aqi <= 100) {
+            return '#FFD700';      // Vàng đậm
+        } else if (aqi <= 150) {
+            return '#FF8C00';      // Cam đậm
+        } else if (aqi <= 200) {
+            return '#FF4500';      // Đỏ cam đậm
+        } else if (aqi <= 300) {
+            return '#800080';      // Tím đậm
+        } else {
+            return '#800000';      // Đỏ đậm
+        }
+    };
+
+    // Tạo district layer từ GeoJSON data
+    const createDistrictLayer = (data: AQIData[]) => {
+        try {
+            console.log('🗺️ Creating district layer with data:', hanoiGeoData);
+            console.log('🗺️ Sample district coordinates structure:', hanoiGeoData.level2s[0]?.coordinates);
+
+            // Convert dữ liệu về định dạng GeoJSON features
+            const geoJsonFeatures = {
+                type: "FeatureCollection",
+                features: hanoiGeoData.level2s.map(district => {
+                    const districtAQI = calculateDistrictAQI(district.coordinates, data);
+
+                    // Fix coordinates structure: Remove extra nesting level
+                    // Từ [[[[[lon, lat]]]]] thành [[[lon, lat]]]
+                    let fixedCoordinates;
+                    try {
+                        // Kiểm tra và sửa cấu trúc coordinates
+                        if (Array.isArray(district.coordinates) &&
+                            Array.isArray(district.coordinates[0]) &&
+                            Array.isArray(district.coordinates[0][0]) &&
+                            Array.isArray(district.coordinates[0][0][0])) {
+                            // Cấu trúc hiện tại: [[[[[lon, lat]]]]]
+                            // Cần: [[[lon, lat]]]
+                            fixedCoordinates = district.coordinates[0];
+                        } else {
+                            fixedCoordinates = district.coordinates;
+                        }
+                    } catch (error) {
+                        console.warn('Error fixing coordinates for district:', district.name, error);
+                        fixedCoordinates = district.coordinates;
+                    }
+
+                    return {
+                        type: "Feature",
+                        properties: {
+                            name: district.name,
+                            level2_id: district.level2_id,
+                            aqi: districtAQI
+                        },
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: fixedCoordinates
+                        }
+                    };
+                })
+            };
+
+            console.log('🗺️ GeoJSON features created:', geoJsonFeatures);
+
+            // Tạo GeoJSON layer với error handling
+            const districtLayer = (L as any).geoJSON(geoJsonFeatures, {
+                style: (feature: any) => {
+                    const aqi = feature.properties.aqi;
+                    return {
+                        fillColor: getDistrictColor(aqi),
+                        weight: 1.5,                           // Đường viền mỏng hơn mặc định
+                        opacity: 0.9,                          // Border rõ nét hơn
+                        color: '#ffffff',                      // Border màu trắng trung tính
+                        fillOpacity: 0.5,                      // Giảm opacity để thấy bản đồ nền
+                        dashArray: null                        // Đường liền, không nét đứt
+                    };
+                },
+                onEachFeature: (feature: any, layer: any) => {
+                    const districtName = feature.properties.name;
+                    const aqi = feature.properties.aqi;
+                    const aqiLabel = getAQILabel(aqi);
+
+                    // Tooltip chuyên nghiệp cho district
+                    layer.bindTooltip(`
+                    <div class="district-tooltip-content">
+                        <div class="district-name">${districtName}</div>
+                        <div class="district-aqi">
+                            <span class="aqi-number" style="color: ${getDistrictBorderColor(aqi)};">${aqi}</span>
+                            <span class="aqi-status">${aqiLabel}</span>
+                        </div>
+                        <div class="district-info">AQI Trung bình</div>
+                    </div>
+                `, {
+                        permanent: false,
+                        direction: 'top',
+                        offset: [0, -5],
+                        className: 'district-tooltip-modern',
+                        opacity: 0.95
+                    });
+
+                    // Hover effects mượt mà và chuyên nghiệp
+                    layer.on({
+                        mouseover: (e: any) => {
+                            const layer = e.target;
+                            const aqi = layer.feature.properties.aqi;
+                            layer.setStyle({
+                                weight: 3,                          // Tăng độ dày border khi hover
+                                opacity: 1,                         // Border rõ nét hoàn toàn
+                                color: getDistrictBorderColor(aqi), // Đổi border thành màu AQI
+                                fillOpacity: 0.7,                   // Tăng opacity để nổi bật
+                                dashArray: null
+                            });
+                            layer.bringToFront();
+
+                            // Đảm bảo markers vẫn ở trên
+                            if (markerClusterGroupRef.current) {
+                                markerClusterGroupRef.current.bringToFront();
+                            }
+                        },
+                        mouseout: (e: any) => {
+                            const layer = e.target;
+                            layer.setStyle({
+                                weight: 1.5,                        // Trở về độ dày mặc định
+                                opacity: 0.9,                       // Trở về opacity mặc định
+                                color: '#ffffff',                   // Trở về border trắng
+                                fillOpacity: 0.5,                   // Trở về độ trong suốt mặc định
+                                dashArray: null
+                            });
+                        },
+                        click: (e: any) => {
+                            const bounds = e.target.getBounds();
+                            mapInstanceRef.current?.fitBounds(bounds, {
+                                padding: [30, 30],
+                                maxZoom: 13  // Giới hạn zoom để không quá gần
+                            });
+                        }
+                    });
+                }
+            });
+
+            return districtLayer;
+        } catch (error) {
+            console.error('🗺️ Error creating district layer:', error);
+            return null;
+        }
+    };
 
     // Tạo heatmap layer từ dữ liệu AQI
     const createHeatmapLayer = (data: AQIData[]) => {
@@ -211,6 +433,14 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             heatmapLayerRef.current = null;
         }
 
+        // Xóa district layer cũ
+        if (districtLayerRef.current && mapInstanceRef.current) {
+            if (mapInstanceRef.current.hasLayer(districtLayerRef.current)) {
+                mapInstanceRef.current.removeLayer(districtLayerRef.current);
+            }
+            districtLayerRef.current = null;
+        }
+
         // Tạo markers mới
         data.forEach((location) => {
             const aqi = location.AQI_TOTAL || location.aqi || 0;
@@ -218,11 +448,12 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             const label = getAQILabel(aqi);
             const levelInfo = getAQILevelInfo(aqi);
 
-            // Tạo custom icon cờ cắm theo màu AQI
+            // Tạo custom icon cờ cắm theo màu AQI với click area được mở rộng
             const icon = (L as any).divIcon({
                 className: 'aqi-flag-marker',
                 html: `
                     <div class="flag-container" style="--flag-color: ${color};">
+                        <div class="flag-clickable-area"></div>
                         <div class="flag-pole"></div>
                         <div class="flag-body">
                             <div class="flag-content">
@@ -234,9 +465,9 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                         <div class="flag-shadow"></div>
                     </div>
                 `,
-                iconSize: [60, 70],
-                iconAnchor: [30, 65],
-                popupAnchor: [0, -65]
+                iconSize: [80, 80],
+                iconAnchor: [40, 75],
+                popupAnchor: [0, -75]
             });
 
             // Tạo marker với tooltip
@@ -295,29 +526,26 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                     
                     <div class="tooltip-advice">
                         <span class="advice-icon">💡</span>
-                        <span class="advice-text">${levelInfo.healthAdvice}</span>
+                        <div class="advice-text">${levelInfo.healthAdvice}</div>
                     </div>
-                    
-                    <button 
-                        class="tooltip-button"
-                        onclick="window.openForecastDetail('${location.latitude}_${location.longitude}')"
-                    >
-                        📊 Xem dự báo chi tiết
-                    </button>
                 </div>
             `;
 
-            // Thử tooltip đơn giản với hover tự nhiên
+            // Tooltip với cấu hình tối ưu chống nhấp nháy và hiệu năng cao
             marker.bindTooltip(tooltipContent, {
-                permanent: false,
-                direction: 'top',
-                offset: [0, -10],
+                permanent: false,       // Chỉ hiện khi hover
+                direction: 'top',       // Ưu tiên hiển thị ở phía trên
+                sticky: true,           // QUAN TRỌNG: Tooltip đi theo chuột, chống nhấp nháy
+                offset: [0, -15],       // Đẩy tooltip lên cao hơn để không che marker
                 className: 'custom-tooltip',
-                opacity: 1
+                opacity: 1,
+                interactive: true,      // Cho phép tương tác với nội dung tooltip
+                pane: 'tooltipPane'     // Sử dụng pane riêng để tối ưu z-index
             });
 
             // Sử dụng Leaflet built-in hover - đơn giản và ổn định
-            // Không cần custom event listeners
+            // Không cần custom event listeners vì bindTooltip với sticky: true
+            // đã xử lý hoàn toàn vấn đề nhấp nháy và UX mượt mà
 
             // Xử lý click marker - mở sidebar ngay lập tức
             marker.on('click', () => {
@@ -339,6 +567,15 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             const heatmap = createHeatmapLayer(data);
             heatmapLayerRef.current = heatmap;
             // Heatmap sẽ được quản lý bởi custom layer menu
+        }
+
+        // Tạo district layer mới
+        if (data.length > 0) {
+            const districtLayer = createDistrictLayer(data);
+            if (districtLayer) {
+                districtLayerRef.current = districtLayer;
+                // District layer sẽ được quản lý bởi custom layer menu
+            }
         }
 
         // Fit bounds nếu có data
@@ -419,36 +656,24 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                 }
             }
         }
-    }, [showMarkers, showHeatmap]);
 
-    // Thêm global functions để xử lý click từ tooltip
-    useEffect(() => {
-        (window as any).openForecastDetail = (locationId: string) => {
-            console.log('🗺️ Map: Opening forecast detail for:', locationId);
-            const [lat, lng] = locationId.split('_');
-            const location = data.find(loc =>
-                Math.abs(loc.latitude - parseFloat(lat)) < 0.001 &&
-                Math.abs(loc.longitude - parseFloat(lng)) < 0.001
-            );
-
-            if (location) {
-                console.log('🗺️ Map: Found location for forecast:', location);
-                onLocationSelect(location);
-
-                // Trigger the forecast page navigation
-                const event = new CustomEvent('openForecast', {
-                    detail: { location }
-                });
-                window.dispatchEvent(event);
+        // Toggle district layer
+        if (districtLayerRef.current) {
+            if (showDistricts) {
+                if (!mapInstanceRef.current.hasLayer(districtLayerRef.current)) {
+                    mapInstanceRef.current.addLayer(districtLayerRef.current);
+                    // Đưa district layer xuống dưới markers
+                    districtLayerRef.current.bringToBack();
+                }
             } else {
-                console.log('🗺️ Map: Location not found for forecast');
+                if (mapInstanceRef.current.hasLayer(districtLayerRef.current)) {
+                    mapInstanceRef.current.removeLayer(districtLayerRef.current);
+                }
             }
-        };
+        }
+    }, [showMarkers, showHeatmap, showDistricts]);
 
-        return () => {
-            delete (window as any).openForecastDetail;
-        };
-    }, [data, onLocationSelect]);
+    // Global function cleanup - không còn cần thiết vì đã bỏ button
 
     return (
         <div className="map-container">
@@ -511,6 +736,16 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                                     />
                                     <span className="layer-icon">🌡️</span>
                                     <span className="layer-label">Bản Đồ Nhiệt</span>
+                                </label>
+
+                                <label className="layer-option">
+                                    <input
+                                        type="checkbox"
+                                        checked={showDistricts}
+                                        onChange={(e) => setShowDistricts(e.target.checked)}
+                                    />
+                                    <span className="layer-icon">🗺️</span>
+                                    <span className="layer-label">Vùng Hành Chính</span>
                                 </label>
                             </div>
                         </div>

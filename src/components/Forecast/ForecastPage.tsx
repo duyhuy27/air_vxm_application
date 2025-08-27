@@ -37,8 +37,7 @@ const ForecastPage = ({ selectedLocation, onBack }: ForecastPageProps): React.JS
                 dayDate,
                 aqi: Math.round(forecastAQI),
                 tempHigh: Math.round(forecastTemp + 2),
-                tempLow: Math.round(forecastTemp - 2),
-                weatherIcon: getWeatherIcon(forecastAQI)
+                tempLow: Math.round(forecastTemp - 2)
             };
         });
     };
@@ -133,20 +132,12 @@ const ForecastPage = ({ selectedLocation, onBack }: ForecastPageProps): React.JS
                 dayDate,
                 aqi: Math.round(forecastAQI),
                 tempHigh: Math.round(forecastTemp + 2),
-                tempLow: Math.round(forecastTemp - 2),
-                weatherIcon: getWeatherIcon(forecastAQI)
+                tempLow: Math.round(forecastTemp - 2)
             };
         });
     };
 
-    const getWeatherIcon = (aqi: number) => {
-        if (aqi <= 50) return '☀️'; // Good - Sunny
-        if (aqi <= 100) return '🌤️'; // Moderate - Partly cloudy
-        if (aqi <= 150) return '⛅'; // Unhealthy for Sensitive - Cloudy
-        if (aqi <= 200) return '🌫️'; // Unhealthy - Hazy
-        if (aqi <= 300) return '🌧️'; // Very Unhealthy - Rainy
-        return '⛈️'; // Hazardous - Stormy
-    };
+    // Weather icon function removed - no longer needed
 
     const currentAQI = selectedLocation?.AQI_TOTAL || selectedLocation?.aqi || 0;
 
@@ -257,7 +248,6 @@ const ForecastPage = ({ selectedLocation, onBack }: ForecastPageProps): React.JS
                                                 <div className="day-name">{day.dayName}</div>
                                                 <div className="day-date">{day.dayDate}</div>
                                             </div>
-                                            <div className="weather-icon">{day.weatherIcon}</div>
                                             <div className="forecast-aqi">
                                                 <span
                                                     className="aqi-number"

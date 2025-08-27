@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                                         <div className="rank-number">{index + 1}</div>
                                         <div className="district-info">
                                             <h4>{getDistrictName(location.latitude, location.longitude)}</h4>
-                                            <p>Lat: {location.latitude.toFixed(3)}, Lng: {location.longitude.toFixed(3)}</p>
+                                            {/* <p>Lat: {location.latitude.toFixed(3)}, Lng: {location.longitude.toFixed(3)}</p> */}
                                         </div>
                                     </div>
                                     <div className="aqi-value">
