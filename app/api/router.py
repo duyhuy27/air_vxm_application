@@ -3,7 +3,7 @@ Main API Router - AirVXM Platform
 Router chính cho hệ thống giám sát chất lượng không khí Hà Nội
 """
 from fastapi import APIRouter
-from app.api.endpoints import health, aqi, forecast, chatbot
+from app.api.endpoints import health, aqi, forecast, chatbot, history
 
 # Tạo router chính cho API
 api_router = APIRouter()
@@ -33,4 +33,11 @@ api_router.include_router(
     chatbot.router,
     prefix="/chatbot",
     tags=["chatbot"]
+)
+
+# Historical AQI data endpoints - Analytics and trends
+api_router.include_router(
+    history.router,
+    prefix="/history",
+    tags=["history"]
 ) 
