@@ -7,7 +7,7 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point, polygon } from '@turf/helpers';
 import type { AQIData } from '../../types/aqi';
 import { getAQIColor, getAQILabel, getAQILevelInfo, getDistrictName } from '../../utils/aqi';
-import hanoiGeoData from '../../assets/01.json';
+// Import will be done dynamically to avoid build issues
 
 // Fix for default marker icons in Vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -250,8 +250,12 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
     };
 
     // Tạo district layer từ GeoJSON data
-    const createDistrictLayer = (data: AQIData[]) => {
+    const createDistrictLayer = async (data: AQIData[]) => {
         try {
+            // Load Hanoi districts data dynamically
+            const response = await fetch('/hanoi-districts.json');
+            const hanoiGeoData = await response.json();
+            
             console.log('🗺️ Creating district layer with data:', hanoiGeoData);
             console.log('🗺️ Sample district coordinates structure:', hanoiGeoData.level2s[0]?.coordinates);
 
@@ -571,11 +575,14 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
 
         // Tạo district layer mới
         if (data.length > 0) {
-            const districtLayer = createDistrictLayer(data);
-            if (districtLayer) {
-                districtLayerRef.current = districtLayer;
-                // District layer sẽ được quản lý bởi custom layer menu
-            }
+            createDistrictLayer(data).then(districtLayer => {
+                if (districtLayer) {
+                    districtLayerRef.current = districtLayer;
+                    // District layer sẽ được quản lý bởi custom layer menu
+                }
+            }).catch(error => {
+                console.error('❌ Error creating district layer:', error);
+            });
         }
 
         // Fit bounds nếu có data
