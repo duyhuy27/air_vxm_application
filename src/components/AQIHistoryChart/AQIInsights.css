@@ -1,0 +1,246 @@
+/* AQI Insights Styles */
+.aqi-insights {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.insights-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.insights-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.insights-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.5rem 0 0 0;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.insight-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    transform: translateY(20px);
+    opacity: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.insight-card.animate {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.insight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.25);
+}
+
+.insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    border-radius: 12px 12px 0 0;
+}
+
+.insight-card.max-aqi::before {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.insight-card.min-aqi::before {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.insight-card.good-days::before {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
+
+.insight-card.trend::before {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.insight-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    text-align: center;
+}
+
+.insight-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #64748b;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.insight-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.insight-meta {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 0.5rem 0 0 0;
+    text-align: center;
+}
+
+.insight-progress {
+    margin-top: 0.75rem;
+    background: #f1f5f9;
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.insight-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 8px;
+    transition: width 0.8s ease;
+    position: relative;
+}
+
+.insight-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.trend-icon {
+    font-size: 1.5rem;
+    margin-left: 0.5rem;
+}
+
+.trend-improving {
+    color: #10b981;
+}
+
+.trend-worsening {
+    color: #ef4444;
+}
+
+.trend-stable {
+    color: #64748b;
+}
+
+.insights-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    color: #64748b;
+}
+
+.insights-error {
+    text-align: center;
+    padding: 2rem;
+    color: #ef4444;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .insights-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .insight-card {
+        padding: 1rem;
+    }
+
+    .insight-value {
+        font-size: 1.5rem;
+    }
+
+    .insights-title {
+        font-size: 1.125rem;
+    }
+}
+
+/* Animation delays for staggered effect */
+.insight-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.insight-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.insight-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.insight-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.insight-card.animate {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
