@@ -7,7 +7,7 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { point, polygon } from '@turf/helpers';
 import type { AQIData } from '../../types/aqi';
 import { getAQIColor, getAQILabel, getAQILevelInfo, getDistrictName } from '../../utils/aqi';
-// Import will be done dynamically to avoid build issues
+import { getHanoiDistrictsData } from './hanoiDistrictsData';
 
 // Fix for default marker icons in Vite
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -249,29 +249,11 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
         }
     };
 
-    // Tạo district layer từ GeoJSON data
+        // Tạo district layer từ GeoJSON data
     const createDistrictLayer = async (data: AQIData[]) => {
         try {
-            // Load Hanoi districts data dynamically
-            const response = await fetch('/hanoi-districts.json');
-
-            if (!response.ok) {
-                throw new Error(`Failed to load districts data: ${response.status}`);
-            }
-
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                console.warn('🗺️ Districts data not available, skipping district layer');
-                return null;
-            }
-
-            let hanoiGeoData;
-            try {
-                hanoiGeoData = await response.json();
-            } catch (parseError) {
-                console.error('🗺️ Failed to parse districts JSON:', parseError);
-                return null;
-            }
+            // Load Hanoi districts data with fallback
+            const hanoiGeoData = await getHanoiDistrictsData();
 
             console.log('🗺️ Creating district layer with data:', hanoiGeoData);
 
