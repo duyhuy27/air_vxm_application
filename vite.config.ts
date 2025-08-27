@@ -30,13 +30,21 @@ export default defineConfig({
     sourcemap: false,
     minify: 'terser',
     chunkSizeWarningLimit: 1000,
+    // Ensure static assets are copied correctly
+    assetsInlineLimit: 0,
   },
   server: {
     port: 3000,
     host: true,
+    // Configure proper MIME types for JSON files
+    fs: {
+      strict: false,
+    },
   },
   preview: {
     port: 3000,
     host: true,
   },
+  // Ensure JSON files are served with correct MIME type
+  assetsInclude: ['**/*.json'],
 })

@@ -53,6 +53,16 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
                 data = await historyAPI.getHourly(locationName, 24);
             }
 
+            console.log('📊 History data received:', data);
+
+            // Validate data structure
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                console.log('⚠️ No history data available, showing empty chart');
+                setChartData([]);
+                setError('Không có dữ liệu lịch sử cho khu vực này.');
+                return;
+            }
+
             // Transform data for chart
             const transformedData: ChartDataPoint[] = data.map((item) => {
                 let formattedTime: string;
@@ -65,7 +75,9 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
                         day: '2-digit',
                         month: '2-digit'
                     });
-                    aqi = item.avg_aqi || 0;
+                    // Validate aqi value to prevent NaN
+                    const rawAqi = item.avg_aqi;
+                    aqi = (typeof rawAqi === 'number' && !isNaN(rawAqi)) ? rawAqi : 0;
                 } else {
                     // Hourly data format
                     const date = new Date(item.time);
@@ -73,7 +85,15 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
                         hour: '2-digit',
                         minute: '2-digit'
                     });
-                    aqi = item.AQI_TOTAL || 0;
+                    // Validate aqi value to prevent NaN
+                    const rawAqi = item.AQI_TOTAL;
+                    aqi = (typeof rawAqi === 'number' && !isNaN(rawAqi)) ? rawAqi : 0;
+                }
+
+                // Ensure aqi is a valid number
+                if (typeof aqi !== 'number' || isNaN(aqi)) {
+                    console.warn('Invalid AQI value detected:', aqi, 'for item:', item);
+                    aqi = 0;
                 }
 
                 return {
@@ -82,13 +102,50 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
                     formattedTime,
                     aqiLevel: getAQILabel(aqi)
                 };
+            }).filter(item => {
+                // Filter out invalid data points
+                return item.aqi >= 0 && !isNaN(item.aqi) && item.formattedTime;
             });
 
+            if (transformedData.length === 0) {
+                console.log('⚠️ No valid data points after transformation, showing empty chart');
+                setChartData([]);
+                setError('Dữ liệu lịch sử không hợp lệ. Vui lòng thử lại sau.');
+                return;
+            }
+
+            console.log('✅ Transformed chart data:', transformedData.length, 'valid points');
             setChartData(transformedData);
+            setError(null); // Clear any previous errors
         } catch (err: any) {
-            console.error('Error fetching history data:', err);
-            setError('Không thể tải dữ liệu lịch sử. Vui lòng thử lại.');
+            console.error('❌ Error fetching history data:', err);
+
+            // Enhanced error handling
+            let errorMessage = 'Không thể tải dữ liệu lịch sử. Vui lòng thử lại.';
+
+            if (err.code === 'ECONNABORTED') {
+                errorMessage = 'Yêu cầu bị timeout. Vui lòng thử lại sau.';
+            } else if (err.code === 'ERR_NETWORK') {
+                errorMessage = 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.';
+            } else if (err.response?.status === 500) {
+                errorMessage = 'Lỗi máy chủ. Dữ liệu lịch sử tạm thời không khả dụng. Vui lòng thử lại sau.';
+            } else if (err.response?.status === 404) {
+                errorMessage = 'API lịch sử chưa có sẵn. Vui lòng thử lại sau.';
+            } else if (err.response?.status >= 500) {
+                errorMessage = 'Lỗi máy chủ. Vui lòng thử lại sau.';
+            } else if (err.response?.status >= 400) {
+                errorMessage = 'Lỗi yêu cầu. Vui lòng kiểm tra thông tin.';
+            }
+
+            setError(errorMessage);
             setChartData([]);
+
+            // Log additional error details for debugging
+            console.log('📊 Chart error details:', {
+                status: err.response?.status,
+                message: err.message,
+                data: err.response?.data
+            });
         } finally {
             setLoading(false);
         }
@@ -99,16 +156,19 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
             const summaryData = await historyAPI.getSummary(locationName);
             setSummary(summaryData);
         } catch (err: any) {
-            console.error('Error fetching summary:', err);
+            console.error('❌ Error fetching summary:', err);
 
             // More specific error messages
             if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
-                console.log('Server timeout, will retry later');
+                console.log('⏰ Server timeout, will retry later');
             } else if (err.response?.status >= 500) {
-                console.log('Server error, will retry later');
+                console.log('🔥 Server error, will retry later');
+                // Don't set error for summary - it's not critical for chart display
             } else if (err.response?.status === 404) {
-                console.log('API not available yet');
+                console.log('📡 API not available yet');
             }
+
+            // Don't set error for summary - it's not critical
         }
     };
 
@@ -192,9 +252,13 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
             <div className="chart-header">
                 <div className="chart-title">
                     <h3>📊 Lịch sử dữ liệu AQI</h3>
-                    {summary && (
+                    {summary ? (
                         <div className="chart-subtitle">
-                            Trung bình 30 ngày: <span className="summary-aqi">{summary.avg_aqi_30d}</span>
+                            Trung bình 30 ngày: <span className="summary-aqi">{summary.avg_aqi_30d || 'N/A'}</span>
+                        </div>
+                    ) : (
+                        <div className="chart-subtitle">
+                            <span className="summary-placeholder">Đang tải thống kê...</span>
                         </div>
                     )}
                 </div>
@@ -224,6 +288,19 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
                     <div className="chart-error">
                         <div className="error-icon">⚠️</div>
                         <div className="error-message">{error}</div>
+                        <div className="error-details">
+                            {error.includes('500') && (
+                                <p className="error-note">
+                                    💡 <strong>Lưu ý:</strong> Dữ liệu lịch sử tạm thời không khả dụng do lỗi máy chủ.
+                                    Bạn vẫn có thể xem dữ liệu hiện tại và dự báo.
+                                </p>
+                            )}
+                            {error.includes('timeout') && (
+                                <p className="error-note">
+                                    💡 <strong>Lưu ý:</strong> Yêu cầu bị timeout. Vui lòng kiểm tra kết nối mạng.
+                                </p>
+                            )}
+                        </div>
                         <button className="retry-btn" onClick={fetchHistoryData}>
                             Thử lại
                         </button>

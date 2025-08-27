@@ -249,7 +249,7 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
         }
     };
 
-        // Tạo district layer từ GeoJSON data
+    // Tạo district layer từ GeoJSON data
     const createDistrictLayer = async (data: AQIData[]) => {
         try {
             // Load Hanoi districts data with fallback
@@ -270,48 +270,109 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
 
             console.log('🗺️ Sample district coordinates structure:', hanoiGeoData.level2s[0]?.coordinates);
 
-            // Convert dữ liệu về định dạng GeoJSON features
+            // Convert dữ liệu về định dạng GeoJSON features với validation mạnh mẽ
             const geoJsonFeatures = {
                 type: "FeatureCollection",
-                features: hanoiGeoData.level2s.map((district: any) => {
-                    const districtAQI = calculateDistrictAQI(district.coordinates, data);
-
-                    // Fix coordinates structure: Remove extra nesting level
-                    // Từ [[[[[lon, lat]]]]] thành [[[lon, lat]]]
-                    let fixedCoordinates;
-                    try {
-                        // Kiểm tra và sửa cấu trúc coordinates
-                        if (Array.isArray(district.coordinates) &&
-                            Array.isArray(district.coordinates[0]) &&
-                            Array.isArray(district.coordinates[0][0]) &&
-                            Array.isArray(district.coordinates[0][0][0])) {
-                            // Cấu trúc hiện tại: [[[[[lon, lat]]]]]
-                            // Cần: [[[lon, lat]]]
-                            fixedCoordinates = district.coordinates[0];
-                        } else {
-                            fixedCoordinates = district.coordinates;
+                features: hanoiGeoData.level2s
+                    .filter((district: any) => {
+                        // Validate district has valid coordinates
+                        if (!district.coordinates || !Array.isArray(district.coordinates)) {
+                            console.warn('District missing coordinates:', district.name);
+                            return false;
                         }
-                    } catch (error) {
-                        console.warn('Error fixing coordinates for district:', district.name, error);
-                        fixedCoordinates = district.coordinates;
-                    }
 
-                    return {
-                        type: "Feature",
-                        properties: {
-                            name: district.name,
-                            level2_id: district.level2_id,
-                            aqi: districtAQI
-                        },
-                        geometry: {
-                            type: "Polygon",
-                            coordinates: fixedCoordinates
+                        // Check if coordinates array has at least one ring
+                        if (district.coordinates.length === 0) {
+                            console.warn('District has empty coordinates array:', district.name);
+                            return false;
                         }
-                    };
-                })
+
+                        // Check if first ring has at least 4 points (minimum for polygon)
+                        const firstRing = district.coordinates[0];
+                        if (!Array.isArray(firstRing) || firstRing.length < 4) {
+                            console.warn('District coordinates ring too short:', district.name, firstRing?.length);
+                            return false;
+                        }
+
+                        // Validate each coordinate is a valid [lon, lat] pair
+                        const validCoords = firstRing.every((coord: any) =>
+                            Array.isArray(coord) &&
+                            coord.length === 2 &&
+                            typeof coord[0] === 'number' &&
+                            typeof coord[1] === 'number' &&
+                            !isNaN(coord[0]) &&
+                            !isNaN(coord[1])
+                        );
+
+                        if (!validCoords) {
+                            console.warn('District has invalid coordinate format:', district.name);
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    .map((district: any) => {
+                        const districtAQI = calculateDistrictAQI(district.coordinates, data);
+
+                        // Ensure coordinates are properly structured for GeoJSON
+                        let fixedCoordinates;
+                        try {
+                            // Validate and fix coordinates structure
+                            if (Array.isArray(district.coordinates) &&
+                                Array.isArray(district.coordinates[0]) &&
+                                district.coordinates[0].length >= 4) {
+
+                                // Ensure the polygon is closed (first and last points are the same)
+                                const firstRing = district.coordinates[0];
+                                if (firstRing.length >= 4) {
+                                    // Check if polygon is already closed
+                                    const firstPoint = firstRing[0];
+                                    const lastPoint = firstRing[firstRing.length - 1];
+
+                                    if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+                                        // Close the polygon by adding the first point at the end
+                                        fixedCoordinates = [
+                                            [...firstRing, firstPoint]
+                                        ];
+                                    } else {
+                                        fixedCoordinates = district.coordinates;
+                                    }
+                                } else {
+                                    console.warn('District coordinates ring too short, skipping:', district.name);
+                                    return null;
+                                }
+                            } else {
+                                console.warn('Invalid coordinates structure for district:', district.name);
+                                return null;
+                            }
+                        } catch (error) {
+                            console.warn('Error fixing coordinates for district:', district.name, error);
+                            return null;
+                        }
+
+                        return {
+                            type: "Feature",
+                            properties: {
+                                name: district.name,
+                                level2_id: district.level2_id,
+                                aqi: districtAQI
+                            },
+                            geometry: {
+                                type: "Polygon",
+                                coordinates: fixedCoordinates
+                            }
+                        };
+                    })
+                    .filter(Boolean) // Remove null features
             };
 
             console.log('🗺️ GeoJSON features created:', geoJsonFeatures);
+
+            // Validate that we have valid features
+            if (!geoJsonFeatures.features || geoJsonFeatures.features.length === 0) {
+                console.warn('🗺️ No valid GeoJSON features created');
+                return null;
+            }
 
             // Tạo GeoJSON layer với error handling
             const districtLayer = (L as any).geoJSON(geoJsonFeatures, {
@@ -597,6 +658,8 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             }).catch(error => {
                 console.error('❌ Error creating district layer:', error);
                 console.log('ℹ️ Map will continue without district boundaries');
+                // Ensure district layer ref is null on error
+                districtLayerRef.current = null;
             });
         }
 

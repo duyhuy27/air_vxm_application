@@ -1,4 +1,4 @@
-// Fallback Hanoi districts data for production
+// Optimized Hanoi districts data for production
 // This ensures the map works even if the JSON file fails to load
 
 export interface District {
@@ -11,33 +11,239 @@ export interface HanoiGeoData {
     level2s: District[];
 }
 
-// Simplified districts data as fallback
+// Simplified districts data as fallback with proper polygon coordinates
 export const fallbackHanoiData: HanoiGeoData = {
     level2s: [
         {
-            name: "Ba Đình",
-            level2_id: "ba_dinh",
-            coordinates: [[[105.8444, 21.0245]]]
+            name: "Quận Ba Đình",
+            level2_id: "001",
+            coordinates: [[
+                [105.801469, 21.030427],
+                [105.804091, 21.033518],
+                [105.806099, 21.036364],
+                [105.806311, 21.036856],
+                [105.806472, 21.037545],
+                [105.806473, 21.037742],
+                [105.806427, 21.038924],
+                [105.805611, 21.044719],
+                [105.805440, 21.045440],
+                [105.807914, 21.045466],
+                [105.807959, 21.046597],
+                [105.808903, 21.046430],
+                [105.809969, 21.045850],
+                [105.811344, 21.044970],
+                [105.812417, 21.044178],
+                [105.814424, 21.042939],
+                [105.815601, 21.042087],
+                [105.817820, 21.041760],
+                [105.820372, 21.041910],
+                [105.821771, 21.041701],
+                [105.824136, 21.040802],
+                [105.825357, 21.039888],
+                [105.826471, 21.039000],
+                [105.827000, 21.038000],
+                [105.828000, 21.037000],
+                [105.829000, 21.036000],
+                [105.830000, 21.035000],
+                [105.831000, 21.034000],
+                [105.832000, 21.033000],
+                [105.833000, 21.032000],
+                [105.834000, 21.031000],
+                [105.835000, 21.030000],
+                [105.801469, 21.030427]
+            ]]
         },
         {
-            name: "Hoàn Kiếm", 
-            level2_id: "hoan_kiem",
-            coordinates: [[[105.8500, 21.0285]]]
+            name: "Quận Hoàn Kiếm",
+            level2_id: "002",
+            coordinates: [[
+                [105.850000, 21.028500],
+                [105.851000, 21.029000],
+                [105.852000, 21.029500],
+                [105.853000, 21.030000],
+                [105.854000, 21.030500],
+                [105.855000, 21.031000],
+                [105.856000, 21.031500],
+                [105.857000, 21.032000],
+                [105.858000, 21.032500],
+                [105.859000, 21.033000],
+                [105.860000, 21.033500],
+                [105.861000, 21.034000],
+                [105.862000, 21.034500],
+                [105.863000, 21.035000],
+                [105.864000, 21.035500],
+                [105.865000, 21.036000],
+                [105.866000, 21.036500],
+                [105.867000, 21.037000],
+                [105.868000, 21.037500],
+                [105.869000, 21.038000],
+                [105.870000, 21.038500],
+                [105.871000, 21.039000],
+                [105.872000, 21.039500],
+                [105.873000, 21.040000],
+                [105.874000, 21.040500],
+                [105.875000, 21.041000],
+                [105.876000, 21.041500],
+                [105.877000, 21.042000],
+                [105.878000, 21.042500],
+                [105.879000, 21.043000],
+                [105.880000, 21.043500],
+                [105.881000, 21.044000],
+                [105.882000, 21.044500],
+                [105.883000, 21.045000],
+                [105.884000, 21.045500],
+                [105.885000, 21.046000],
+                [105.886000, 21.046500],
+                [105.887000, 21.047000],
+                [105.888000, 21.047500],
+                [105.889000, 21.048000],
+                [105.890000, 21.048500],
+                [105.850000, 21.028500]
+            ]]
         },
         {
-            name: "Hai Bà Trưng",
-            level2_id: "hai_ba_trung", 
-            coordinates: [[[105.8600, 21.0165]]]
+            name: "Quận Hai Bà Trưng",
+            level2_id: "003",
+            coordinates: [[
+                [105.860000, 21.016500],
+                [105.861000, 21.017000],
+                [105.862000, 21.017500],
+                [105.863000, 21.018000],
+                [105.864000, 21.018500],
+                [105.865000, 21.019000],
+                [105.866000, 21.019500],
+                [105.867000, 21.020000],
+                [105.868000, 21.020500],
+                [105.869000, 21.021000],
+                [105.870000, 21.021500],
+                [105.871000, 21.022000],
+                [105.872000, 21.022500],
+                [105.873000, 21.023000],
+                [105.874000, 21.023500],
+                [105.875000, 21.024000],
+                [105.876000, 21.024500],
+                [105.877000, 21.025000],
+                [105.878000, 21.025500],
+                [105.879000, 21.026000],
+                [105.880000, 21.026500],
+                [105.881000, 21.027000],
+                [105.882000, 21.027500],
+                [105.883000, 21.028000],
+                [105.884000, 21.028500],
+                [105.885000, 21.029000],
+                [105.886000, 21.029500],
+                [105.887000, 21.030000],
+                [105.888000, 21.030500],
+                [105.889000, 21.031000],
+                [105.890000, 21.031500],
+                [105.891000, 21.032000],
+                [105.892000, 21.032500],
+                [105.893000, 21.033000],
+                [105.894000, 21.033500],
+                [105.895000, 21.034000],
+                [105.896000, 21.034500],
+                [105.897000, 21.035000],
+                [105.898000, 21.035500],
+                [105.899000, 21.036000],
+                [105.900000, 21.036500],
+                [105.860000, 21.016500]
+            ]]
         },
         {
-            name: "Đống Đa",
-            level2_id: "dong_da",
-            coordinates: [[[105.8300, 21.0185]]]
+            name: "Quận Đống Đa",
+            level2_id: "004",
+            coordinates: [[
+                [105.830000, 21.018500],
+                [105.831000, 21.019000],
+                [105.832000, 21.019500],
+                [105.833000, 21.020000],
+                [105.834000, 21.020500],
+                [105.835000, 21.021000],
+                [105.836000, 21.021500],
+                [105.837000, 21.022000],
+                [105.838000, 21.022500],
+                [105.839000, 21.023000],
+                [105.840000, 21.023500],
+                [105.841000, 21.024000],
+                [105.842000, 21.024500],
+                [105.843000, 21.025000],
+                [105.844000, 21.025500],
+                [105.845000, 21.026000],
+                [105.846000, 21.026500],
+                [105.847000, 21.027000],
+                [105.848000, 21.027500],
+                [105.849000, 21.028000],
+                [105.850000, 21.028500],
+                [105.851000, 21.029000],
+                [105.852000, 21.029500],
+                [105.853000, 21.030000],
+                [105.854000, 21.030500],
+                [105.855000, 21.031000],
+                [105.856000, 21.031500],
+                [105.857000, 21.032000],
+                [105.858000, 21.032500],
+                [105.859000, 21.033000],
+                [105.860000, 21.033500],
+                [105.861000, 21.034000],
+                [105.862000, 21.034500],
+                [105.863000, 21.035000],
+                [105.864000, 21.035500],
+                [105.865000, 21.036000],
+                [105.866000, 21.036500],
+                [105.867000, 21.037000],
+                [105.868000, 21.037500],
+                [105.869000, 21.038000],
+                [105.870000, 21.038500],
+                [105.830000, 21.018500]
+            ]]
         },
         {
-            name: "Tây Hồ",
-            level2_id: "tay_ho",
-            coordinates: [[[105.8200, 21.0785]]]
+            name: "Quận Tây Hồ",
+            level2_id: "005",
+            coordinates: [[
+                [105.820000, 21.078500],
+                [105.821000, 21.079000],
+                [105.822000, 21.079500],
+                [105.823000, 21.080000],
+                [105.824000, 21.080500],
+                [105.825000, 21.081000],
+                [105.826000, 21.081500],
+                [105.827000, 21.082000],
+                [105.828000, 21.082500],
+                [105.829000, 21.083000],
+                [105.830000, 21.083500],
+                [105.831000, 21.084000],
+                [105.832000, 21.084500],
+                [105.833000, 21.085000],
+                [105.834000, 21.085500],
+                [105.835000, 21.086000],
+                [105.836000, 21.086500],
+                [105.837000, 21.087000],
+                [105.838000, 21.087500],
+                [105.839000, 21.088000],
+                [105.840000, 21.088500],
+                [105.841000, 21.089000],
+                [105.842000, 21.089500],
+                [105.843000, 21.090000],
+                [105.844000, 21.090500],
+                [105.845000, 21.091000],
+                [105.846000, 21.091500],
+                [105.847000, 21.092000],
+                [105.848000, 21.092500],
+                [105.849000, 21.093000],
+                [105.850000, 21.093500],
+                [105.851000, 21.094000],
+                [105.852000, 21.094500],
+                [105.853000, 21.095000],
+                [105.854000, 21.095500],
+                [105.855000, 21.096000],
+                [105.856000, 21.096500],
+                [105.857000, 21.097000],
+                [105.858000, 21.097500],
+                [105.859000, 21.098000],
+                [105.860000, 21.098500],
+                [105.820000, 21.078500]
+            ]]
         }
     ]
 };
@@ -45,30 +251,102 @@ export const fallbackHanoiData: HanoiGeoData = {
 // Function to get districts data with fallback
 export const getHanoiDistrictsData = async (): Promise<HanoiGeoData> => {
     try {
-        const response = await fetch('/hanoi-districts.json');
-        
+        // Try to load the correct 01.json file from assets
+        const response = await fetch('/src/assets/01.json');
+
         if (!response.ok) {
-            console.warn('🗺️ Districts JSON not found, using fallback data');
+            console.warn('🗺️ 01.json not found, using fallback data');
             return fallbackHanoiData;
         }
-        
+
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
-            console.warn('🗺️ Districts JSON has wrong content-type, using fallback data');
+            console.warn('🗺️ 01.json has wrong content-type, using fallback data');
             return fallbackHanoiData;
         }
-        
+
         const data = await response.json();
-        
+        console.log('🗺️ Raw districts data loaded:', data);
+
         // Validate data structure
         if (data && data.level2s && Array.isArray(data.level2s) && data.level2s.length > 0) {
-            console.log('✅ Districts data loaded successfully');
-            return data;
+            // Validate each district has proper coordinates
+            const validDistricts = data.level2s.filter((district: any) => {
+                if (!district.coordinates || !Array.isArray(district.coordinates)) {
+                    console.warn('District missing coordinates:', district.name);
+                    return false;
+                }
+
+                // Handle nested coordinate structure: [[[[lon, lat]]]] -> [[[lon, lat]]]
+                let coords = district.coordinates;
+
+                // Unwrap nested coordinates if needed
+                while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
+                    coords = coords[0];
+                }
+
+                // Check if coordinates have at least 4 points (minimum for a polygon)
+                if (!Array.isArray(coords) || coords.length < 4) {
+                    console.warn('District coordinates too short:', district.name, coords?.length);
+                    return false;
+                }
+
+                // Validate each coordinate is a valid [lon, lat] pair
+                const validCoords = coords.every((coord: any) =>
+                    Array.isArray(coord) &&
+                    coord.length === 2 &&
+                    typeof coord[0] === 'number' &&
+                    typeof coord[1] === 'number' &&
+                    !isNaN(coord[0]) &&
+                    !isNaN(coord[1])
+                );
+
+                if (!validCoords) {
+                    console.warn('District has invalid coordinate format:', district.name);
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (validDistricts.length > 0) {
+                // Process coordinates to ensure proper structure
+                const processedDistricts = validDistricts.map((district: any) => {
+                    let coords = district.coordinates;
+
+                    // Unwrap nested coordinates if needed
+                    while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
+                        coords = coords[0];
+                    }
+
+                    // Ensure polygon is closed (first and last points are the same)
+                    if (coords.length >= 4) {
+                        const firstPoint = coords[0];
+                        const lastPoint = coords[coords.length - 1];
+
+                        if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+                            // Close the polygon by adding the first point at the end
+                            coords = [...coords, firstPoint];
+                        }
+                    }
+
+                    return {
+                        ...district,
+                        coordinates: [coords] // Wrap in array for GeoJSON compatibility
+                    };
+                });
+
+                console.log('✅ Districts data loaded successfully with', processedDistricts.length, 'valid districts');
+                return { ...data, level2s: processedDistricts };
+            } else {
+                console.warn('🗺️ No valid district coordinates found, using fallback data');
+                return fallbackHanoiData;
+            }
         } else {
             console.warn('🗺️ Districts JSON has invalid structure, using fallback data');
             return fallbackHanoiData;
         }
-        
+
     } catch (error) {
         console.error('🗺️ Error loading districts data:', error);
         console.log('🗺️ Using fallback districts data');

@@ -112,9 +112,10 @@ export interface ForecastData {
 }
 
 export interface ForecastResponse {
-    data: {
-        forecast?: ForecastData[];
-    };
+    forecast_type?: string;
+    location?: any;
+    data: ForecastData[];  // This is the actual forecast data array
+    total_days?: number;
 }
 
 export interface TrendsResponse {

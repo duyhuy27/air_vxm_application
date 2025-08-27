@@ -74,26 +74,51 @@ const ForecastPage = ({ selectedLocation, onBack }: ForecastPageProps): React.JS
         setError(null);
 
         try {
-            // Try to fetch real forecast data from API
+            // Try to fetch real forecast data from API with better error handling
             const response = await forecastAPI.getDaily(
                 selectedLocation.latitude,
                 selectedLocation.longitude,
                 7
             );
 
-            if (response.data?.forecast) {
-                setForecastData(response.data.forecast);
+            console.log('🌐 Forecast API response:', response);
+
+            // Enhanced response validation
+            if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
+                // Handle the actual API response structure
+                console.log('✅ Valid forecast data received from data field:', response.data.length, 'days');
+                setForecastData(response.data);
+            } else if (response && response.data && Array.isArray(response.data)) {
+                console.log('⚠️ Forecast data is empty array, using generated data');
+                setForecastData(generateForecastData());
+            } else if (response && response.data) {
+                console.log('⚠️ API response missing forecast structure:', response.data);
+                setForecastData(generateForecastData());
             } else {
                 // Fallback to generated forecast if API doesn't return forecast data
+                console.log('⚠️ API response missing forecast data, using generated data');
                 setForecastData(generateForecastData());
             }
-        } catch (err) {
-            console.error('Failed to fetch forecast data:', err);
-            // Fallback to generated forecast data on error
+        } catch (err: any) {
+            console.error('❌ Failed to fetch forecast data:', err);
+
+            // Enhanced error handling for different error types
+            if (err.code === 'ECONNABORTED') {
+                setError('Yêu cầu bị timeout. Vui lòng thử lại sau.');
+            } else if (err.code === 'ERR_NETWORK') {
+                setError('Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.');
+            } else if (err.response?.status >= 500) {
+                setError('Lỗi máy chủ. Vui lòng thử lại sau.');
+            } else if (err.response?.status >= 400) {
+                setError('Lỗi yêu cầu. Vui lòng kiểm tra thông tin.');
+            } else {
+                setError('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
+            }
+
+            // Always use fallback data on error
             const fallbackData = generateForecastData();
-            console.log('Using fallback forecast data:', fallbackData);
+            console.log('🔄 Using fallback forecast data due to error:', fallbackData);
             setForecastData(fallbackData);
-            setError(null); // Don't show error, just use fallback data
         } finally {
             setLoading(false);
         }
