@@ -4,6 +4,7 @@ import './ForecastPage.css';
 import type { AQIData } from '../../types/aqi';
 import { getAQILabel, getAQIColor } from '../../utils/aqi';
 import { forecastAPI } from '../../services/api';
+import AQIHistoryChart from '../AQIHistoryChart/AQIHistoryChart';
 
 interface ForecastPageProps {
     selectedLocation: AQIData | null;
@@ -267,6 +268,14 @@ const ForecastPage = ({ selectedLocation, onBack }: ForecastPageProps): React.JS
                                 </div>
                             )}
                         </div>
+
+                        {/* Historical AQI Data Chart - NEW FEATURE */}
+                        {selectedLocation && (
+                            <AQIHistoryChart
+                                locationName={selectedLocation.location_name || selectedLocation.district || 'Khu vực được chọn'}
+                                selectedLocation={selectedLocation}
+                            />
+                        )}
 
                         {/* Thông tin bổ sung về chất lượng không khí - ALWAYS SHOW */}
                         <div className="air-quality-info">

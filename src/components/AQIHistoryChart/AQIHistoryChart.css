@@ -1,0 +1,386 @@
+/* AQI History Chart Component Styles */
+
+.aqi-history-chart {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+}
+
+.aqi-history-chart:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+/* Header Section */
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.chart-title h3 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.chart-subtitle {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.summary-aqi {
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* Time Filter */
+.time-filter {
+    display: flex;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 2px;
+}
+
+.filter-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover:not(:disabled) {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.filter-btn.active {
+    background: #667eea;
+    color: white;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.filter-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Chart Container */
+.chart-container {
+    min-height: 300px;
+    position: relative;
+    margin-bottom: 16px;
+}
+
+/* Custom Tooltip */
+.chart-tooltip {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    min-width: 120px;
+}
+
+.tooltip-header {
+    margin-bottom: 8px;
+}
+
+.tooltip-time {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tooltip-content {
+    text-align: center;
+}
+
+.aqi-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.aqi-number {
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.aqi-value .aqi-label {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.aqi-level {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Loading Skeleton */
+.chart-skeleton {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.skeleton-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.skeleton-title {
+    height: 24px;
+    width: 200px;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+    border-radius: 6px;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+.skeleton-filters {
+    height: 36px;
+    width: 180px;
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+    border-radius: 12px;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+.skeleton-chart {
+    height: 300px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+}
+
+.skeleton-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    gap: 8px;
+}
+
+.skeleton-bar {
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+    border-radius: 4px 4px 0 0;
+    flex: 1;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: calc(200px + 100%) 0;
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Error State */
+.chart-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+    color: #64748b;
+}
+
+.error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.error-message {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ef4444;
+    margin-bottom: 16px;
+}
+
+.retry-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+    background: #5a67d8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* No Data State */
+.chart-no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+    text-align: center;
+    color: #64748b;
+}
+
+.no-data-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.no-data-message {
+    font-size: 18px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.no-data-subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    line-height: 1.4;
+}
+
+/* Chart Legend */
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.legend-color {
+    width: 16px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .aqi-history-chart {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .chart-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .chart-title h3 {
+        font-size: 18px;
+    }
+
+    .time-filter {
+        align-self: stretch;
+    }
+
+    .filter-btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    .chart-container {
+        min-height: 250px;
+    }
+
+    .chart-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .skeleton-title {
+        width: 150px;
+    }
+
+    .skeleton-filters {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .aqi-history-chart {
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .chart-title h3 {
+        font-size: 16px;
+    }
+
+    .chart-container {
+        min-height: 200px;
+    }
+
+    .filter-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}

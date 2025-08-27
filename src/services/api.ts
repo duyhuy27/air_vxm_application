@@ -10,8 +10,8 @@ import type {
     ChatbotSuggestionsResponse
 } from '../types/aqi';
 
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://fastapi-bigquery-app-production.up.railway.app/api/v1';
+// API Configuration - Using production server with new history APIs
+const API_BASE_URL = 'https://fastapi-bigquery-app-production.up.railway.app/api/v1';
 
 // Create axios instance
 const apiClient = axios.create({
@@ -142,6 +142,33 @@ export const chatbotAPI = {
     // Lấy gợi ý câu hỏi
     getSuggestions: async (): Promise<ChatbotSuggestionsResponse> => {
         const response = await apiClient.get('/chatbot/suggestions');
+        return response.data;
+    }
+};
+
+// Historical AQI data API Services
+export const historyAPI = {
+    // Lấy dữ liệu AQI trung bình theo ngày
+    getDaily: async (locationName: string, days: number = 7): Promise<any[]> => {
+        const response = await apiClient.get('/history/daily', {
+            params: { location_name: locationName, days }
+        });
+        return response.data;
+    },
+
+    // Lấy dữ liệu AQI theo giờ
+    getHourly: async (locationName: string, hours: number = 24): Promise<any[]> => {
+        const response = await apiClient.get('/history/hourly', {
+            params: { location_name: locationName, hours }
+        });
+        return response.data;
+    },
+
+    // Lấy thống kê tổng hợp lịch sử
+    getSummary: async (locationName: string): Promise<any> => {
+        const response = await apiClient.get('/history/summary', {
+            params: { location_name: locationName }
+        });
         return response.data;
     }
 };
