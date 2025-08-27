@@ -32,6 +32,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     // Ensure static assets are copied correctly
     assetsInlineLimit: 0,
+    // Copy public assets to dist
+    copyPublicDir: true,
   },
   server: {
     port: 3000,
@@ -47,4 +49,6 @@ export default defineConfig({
   },
   // Ensure JSON files are served with correct MIME type
   assetsInclude: ['**/*.json'],
+  // Public directory configuration
+  publicDir: 'public',
 })

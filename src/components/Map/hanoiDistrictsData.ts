@@ -251,105 +251,31 @@ export const fallbackHanoiData: HanoiGeoData = {
 // Function to get districts data with fallback
 export const getHanoiDistrictsData = async (): Promise<HanoiGeoData> => {
     try {
-        // Try to load the correct 01.json file from assets
-        const response = await fetch('/src/assets/01.json');
-
+        console.log('🗺️ Loading Hanoi districts data...');
+        
+        // Try to fetch from public directory first (for production)
+        const response = await fetch('/01.json');
+        
         if (!response.ok) {
-            console.warn('🗺️ 01.json not found, using fallback data');
-            return fallbackHanoiData;
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+        
+        // Check content type
         const contentType = response.headers.get('content-type');
+        console.log('📄 Content-Type:', contentType);
+        
         if (!contentType || !contentType.includes('application/json')) {
-            console.warn('🗺️ 01.json has wrong content-type, using fallback data');
+            console.warn('🗺️ Districts JSON has wrong content-type, using fallback data');
             return fallbackHanoiData;
         }
-
+        
         const data = await response.json();
-        console.log('🗺️ Raw districts data loaded:', data);
-
-        // Validate data structure
-        if (data && data.level2s && Array.isArray(data.level2s) && data.level2s.length > 0) {
-            // Validate each district has proper coordinates
-            const validDistricts = data.level2s.filter((district: any) => {
-                if (!district.coordinates || !Array.isArray(district.coordinates)) {
-                    console.warn('District missing coordinates:', district.name);
-                    return false;
-                }
-
-                // Handle nested coordinate structure: [[[[lon, lat]]]] -> [[[lon, lat]]]
-                let coords = district.coordinates;
-
-                // Unwrap nested coordinates if needed
-                while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
-                    coords = coords[0];
-                }
-
-                // Check if coordinates have at least 4 points (minimum for a polygon)
-                if (!Array.isArray(coords) || coords.length < 4) {
-                    console.warn('District coordinates too short:', district.name, coords?.length);
-                    return false;
-                }
-
-                // Validate each coordinate is a valid [lon, lat] pair
-                const validCoords = coords.every((coord: any) =>
-                    Array.isArray(coord) &&
-                    coord.length === 2 &&
-                    typeof coord[0] === 'number' &&
-                    typeof coord[1] === 'number' &&
-                    !isNaN(coord[0]) &&
-                    !isNaN(coord[1])
-                );
-
-                if (!validCoords) {
-                    console.warn('District has invalid coordinate format:', district.name);
-                    return false;
-                }
-
-                return true;
-            });
-
-            if (validDistricts.length > 0) {
-                // Process coordinates to ensure proper structure
-                const processedDistricts = validDistricts.map((district: any) => {
-                    let coords = district.coordinates;
-
-                    // Unwrap nested coordinates if needed
-                    while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
-                        coords = coords[0];
-                    }
-
-                    // Ensure polygon is closed (first and last points are the same)
-                    if (coords.length >= 4) {
-                        const firstPoint = coords[0];
-                        const lastPoint = coords[coords.length - 1];
-
-                        if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
-                            // Close the polygon by adding the first point at the end
-                            coords = [...coords, firstPoint];
-                        }
-                    }
-
-                    return {
-                        ...district,
-                        coordinates: [coords] // Wrap in array for GeoJSON compatibility
-                    };
-                });
-
-                console.log('✅ Districts data loaded successfully with', processedDistricts.length, 'valid districts');
-                return { ...data, level2s: processedDistricts };
-            } else {
-                console.warn('🗺️ No valid district coordinates found, using fallback data');
-                return fallbackHanoiData;
-            }
-        } else {
-            console.warn('🗺️ Districts JSON has invalid structure, using fallback data');
-            return fallbackHanoiData;
-        }
-
+        console.log('✅ Districts data loaded successfully from public directory');
+        
+        return data;
     } catch (error) {
-        console.error('🗺️ Error loading districts data:', error);
-        console.log('🗺️ Using fallback districts data');
+        console.error('❌ Error loading districts data:', error);
+        console.log('🔄 Using fallback data');
         return fallbackHanoiData;
     }
 };
