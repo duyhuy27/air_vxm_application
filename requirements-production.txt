@@ -1,0 +1,29 @@
+# Production dependencies for AirVXM API
+# Simplified for faster deployment without AI/ML components
+
+# Core FastAPI & Web Server
+fastapi>=0.100.0,<0.120.0
+uvicorn[standard]>=0.20.0,<0.25.0
+
+# Google Cloud & BigQuery
+google-cloud-bigquery==3.27.0
+google-auth==2.37.0
+
+# Data validation & settings
+pydantic>=2.7.0,<3.0.0
+pydantic-settings>=2.7.0
+
+# HTTP & File handling
+python-multipart==0.0.20
+python-dotenv==1.0.1
+httpx==0.28.1
+requests==2.31.0
+
+# Data processing (lightweight)
+pandas==2.2.3
+db-dtypes==1.3.0
+pyarrow==17.0.0
+python-dateutil==2.8.2
+
+# Basic utilities
+numpy>=1.24.0,<2.0.0
