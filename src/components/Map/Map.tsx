@@ -254,9 +254,38 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
         try {
             // Load Hanoi districts data dynamically
             const response = await fetch('/hanoi-districts.json');
-            const hanoiGeoData = await response.json();
-            
+
+            if (!response.ok) {
+                throw new Error(`Failed to load districts data: ${response.status}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                console.warn('🗺️ Districts data not available, skipping district layer');
+                return null;
+            }
+
+            let hanoiGeoData;
+            try {
+                hanoiGeoData = await response.json();
+            } catch (parseError) {
+                console.error('🗺️ Failed to parse districts JSON:', parseError);
+                return null;
+            }
+
             console.log('🗺️ Creating district layer with data:', hanoiGeoData);
+
+            // Validate data structure
+            if (!hanoiGeoData || !hanoiGeoData.level2s || !Array.isArray(hanoiGeoData.level2s)) {
+                console.error('🗺️ Invalid districts data structure:', hanoiGeoData);
+                return null;
+            }
+
+            if (hanoiGeoData.level2s.length === 0) {
+                console.warn('🗺️ No districts data available');
+                return null;
+            }
+
             console.log('🗺️ Sample district coordinates structure:', hanoiGeoData.level2s[0]?.coordinates);
 
             // Convert dữ liệu về định dạng GeoJSON features
@@ -578,10 +607,14 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
             createDistrictLayer(data).then(districtLayer => {
                 if (districtLayer) {
                     districtLayerRef.current = districtLayer;
+                    console.log('✅ District layer created successfully');
                     // District layer sẽ được quản lý bởi custom layer menu
+                } else {
+                    console.log('ℹ️ District layer not available, continuing without it');
                 }
             }).catch(error => {
                 console.error('❌ Error creating district layer:', error);
+                console.log('ℹ️ Map will continue without district boundaries');
             });
         }
 

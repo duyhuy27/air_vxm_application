@@ -98,8 +98,17 @@ const AQIHistoryChart: React.FC<AQIHistoryChartProps> = ({ locationName }) => {
         try {
             const summaryData = await historyAPI.getSummary(locationName);
             setSummary(summaryData);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error fetching summary:', err);
+
+            // More specific error messages
+            if (err.code === 'ECONNABORTED' || err.message?.includes('timeout')) {
+                console.log('Server timeout, will retry later');
+            } else if (err.response?.status >= 500) {
+                console.log('Server error, will retry later');
+            } else if (err.response?.status === 404) {
+                console.log('API not available yet');
+            }
         }
     };
 
