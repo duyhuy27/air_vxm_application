@@ -180,12 +180,12 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
         try {
             // Use the same unwrapping logic as in createDistrictLayer
             let coords = districtCoords;
-            
+
             // Unwrap nested coordinates until we reach the actual coordinate array
             while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
                 coords = coords[0];
             }
-            
+
             // Now coords should be [[[lon, lat]]] or [[lon, lat]]
             let polygonCoords: number[][][];
             if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
@@ -292,12 +292,12 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
 
                         // Handle deeply nested coordinate structures: [[[[[lon, lat]]]]] -> [[[lon, lat]]]
                         let coords = district.coordinates;
-                        
+
                         // Unwrap nested coordinates until we reach the actual coordinate array
                         while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
                             coords = coords[0];
                         }
-                        
+
                         // Now coords should be [[[lon, lat]]] or [[lon, lat]]
                         let firstRing;
                         if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
@@ -342,12 +342,12 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                         try {
                             // Use the same unwrapping logic as in the filter above
                             let coords = district.coordinates;
-                            
+
                             // Unwrap nested coordinates until we reach the actual coordinate array
                             while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
                                 coords = coords[0];
                             }
-                            
+
                             // Now coords should be [[[lon, lat]]] or [[lon, lat]]
                             let firstRing;
                             if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {

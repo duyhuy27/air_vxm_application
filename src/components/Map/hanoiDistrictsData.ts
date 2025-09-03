@@ -11,6 +11,25 @@ export interface HanoiGeoData {
     level2s: District[];
 }
 
+// Interface for GeoJSON structure
+export interface GeoJSONFeature {
+    type: string;
+    properties: {
+        name: string;
+        level2_id: string;
+        district_name?: string;
+    };
+    geometry: {
+        type: string;
+        coordinates: number[][][];
+    };
+}
+
+export interface GeoJSONData {
+    type: string;
+    features: GeoJSONFeature[];
+}
+
 // Simplified districts data as fallback with proper polygon coordinates
 export const fallbackHanoiData: HanoiGeoData = {
     level2s: [
@@ -252,27 +271,36 @@ export const fallbackHanoiData: HanoiGeoData = {
 export const getHanoiDistrictsData = async (): Promise<HanoiGeoData> => {
     try {
         console.log('🗺️ Loading Hanoi districts data...');
-        
+
         // Try to fetch from public directory first (for production)
         const response = await fetch('/01.json');
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         // Check content type
         const contentType = response.headers.get('content-type');
         console.log('📄 Content-Type:', contentType);
-        
+
         if (!contentType || !contentType.includes('application/json')) {
             console.warn('🗺️ Districts JSON has wrong content-type, using fallback data');
             return fallbackHanoiData;
         }
-        
-        const data = await response.json();
+
+        const data: any = await response.json();
         console.log('✅ Districts data loaded successfully from public directory');
-        
-        return data;
+
+        // Convert 01.json structure to our expected format
+        if (data.level2s && Array.isArray(data.level2s)) {
+            // Data is already in our expected format
+            console.log('🔄 Data already in correct format:', data.level2s.length, 'districts');
+            return data as HanoiGeoData;
+        }
+
+        console.warn('🗺️ Unknown data structure, using fallback data');
+        return fallbackHanoiData;
+
     } catch (error) {
         console.error('❌ Error loading districts data:', error);
         console.log('🔄 Using fallback data');
