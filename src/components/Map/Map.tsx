@@ -178,16 +178,25 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
     // Tính AQI trung bình cho một district dựa trên các marker trong vùng
     const calculateDistrictAQI = (districtCoords: number[][][][], data: AQIData[]) => {
         try {
-            // Fix coordinates structure và convert thành polygon turf
+            // Use the same unwrapping logic as in createDistrictLayer
+            let coords = districtCoords;
+            
+            // Unwrap nested coordinates until we reach the actual coordinate array
+            while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
+                coords = coords[0];
+            }
+            
+            // Now coords should be [[[lon, lat]]] or [[lon, lat]]
             let polygonCoords: number[][][];
-            if (Array.isArray(districtCoords) &&
-                Array.isArray(districtCoords[0]) &&
-                Array.isArray(districtCoords[0][0]) &&
-                Array.isArray(districtCoords[0][0][0])) {
-                // Cấu trúc: [[[[[lon, lat]]]]] -> cần [[[lon, lat]]]
-                polygonCoords = districtCoords[0] as unknown as number[][][];
+            if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
+                // Structure: [[[lon, lat]]] (MultiPolygon format)
+                polygonCoords = coords as unknown as number[][][];
+            } else if (Array.isArray(coords[0])) {
+                // Structure: [[lon, lat]] (Polygon format) - wrap in array
+                polygonCoords = [coords as unknown as number[][]];
             } else {
-                polygonCoords = districtCoords as unknown as number[][][];
+                console.warn('Invalid coordinates structure in calculateDistrictAQI');
+                return 50; // Fallback AQI
             }
 
             const districtPolygon = polygon(polygonCoords);
@@ -281,14 +290,28 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                             return false;
                         }
 
-                        // Check if coordinates array has at least one ring
-                        if (district.coordinates.length === 0) {
-                            console.warn('District has empty coordinates array:', district.name);
+                        // Handle deeply nested coordinate structures: [[[[[lon, lat]]]]] -> [[[lon, lat]]]
+                        let coords = district.coordinates;
+                        
+                        // Unwrap nested coordinates until we reach the actual coordinate array
+                        while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
+                            coords = coords[0];
+                        }
+                        
+                        // Now coords should be [[[lon, lat]]] or [[lon, lat]]
+                        let firstRing;
+                        if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
+                            // Structure: [[[lon, lat]]] (MultiPolygon format)
+                            firstRing = coords[0];
+                        } else if (Array.isArray(coords[0])) {
+                            // Structure: [[lon, lat]] (Polygon format)
+                            firstRing = coords[0];
+                        } else {
+                            console.warn('District has invalid coordinate structure after unwrapping:', district.name);
                             return false;
                         }
 
                         // Check if first ring has at least 4 points (minimum for polygon)
-                        const firstRing = district.coordinates[0];
                         if (!Array.isArray(firstRing) || firstRing.length < 4) {
                             console.warn('District coordinates ring too short:', district.name, firstRing?.length);
                             return false;
@@ -317,32 +340,42 @@ const Map: React.FC<MapProps> = ({ data, onLocationSelect, selectedLocation }) =
                         // Ensure coordinates are properly structured for GeoJSON
                         let fixedCoordinates;
                         try {
-                            // Validate and fix coordinates structure
-                            if (Array.isArray(district.coordinates) &&
-                                Array.isArray(district.coordinates[0]) &&
-                                district.coordinates[0].length >= 4) {
-
-                                // Ensure the polygon is closed (first and last points are the same)
-                                const firstRing = district.coordinates[0];
-                                if (firstRing.length >= 4) {
-                                    // Check if polygon is already closed
-                                    const firstPoint = firstRing[0];
-                                    const lastPoint = firstRing[firstRing.length - 1];
-
-                                    if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
-                                        // Close the polygon by adding the first point at the end
-                                        fixedCoordinates = [
-                                            [...firstRing, firstPoint]
-                                        ];
-                                    } else {
-                                        fixedCoordinates = district.coordinates;
-                                    }
-                                } else {
-                                    console.warn('District coordinates ring too short, skipping:', district.name);
-                                    return null;
-                                }
+                            // Use the same unwrapping logic as in the filter above
+                            let coords = district.coordinates;
+                            
+                            // Unwrap nested coordinates until we reach the actual coordinate array
+                            while (Array.isArray(coords) && coords.length === 1 && Array.isArray(coords[0])) {
+                                coords = coords[0];
+                            }
+                            
+                            // Now coords should be [[[lon, lat]]] or [[lon, lat]]
+                            let firstRing;
+                            if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
+                                // Structure: [[[lon, lat]]] (MultiPolygon format)
+                                firstRing = coords[0];
+                            } else if (Array.isArray(coords[0])) {
+                                // Structure: [[lon, lat]] (Polygon format)
+                                firstRing = coords[0];
                             } else {
                                 console.warn('Invalid coordinates structure for district:', district.name);
+                                return null;
+                            }
+
+                            if (firstRing.length >= 4) {
+                                // Ensure the polygon is closed (first and last points are the same)
+                                const firstPoint = firstRing[0];
+                                const lastPoint = firstRing[firstRing.length - 1];
+
+                                if (firstPoint[0] !== lastPoint[0] || firstPoint[1] !== lastPoint[1]) {
+                                    // Close the polygon by adding the first point at the end
+                                    fixedCoordinates = [
+                                        [...firstRing, firstPoint]
+                                    ];
+                                } else {
+                                    fixedCoordinates = [firstRing];
+                                }
+                            } else {
+                                console.warn('District coordinates ring too short, skipping:', district.name);
                                 return null;
                             }
                         } catch (error) {
